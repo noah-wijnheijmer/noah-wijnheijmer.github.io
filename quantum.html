@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quantum Federated Learning — Noah Wijnheijmer</title>
+<meta name="description" content="Privacy-preserving quantum federated learning at Infosys, Bangalore. Whether amplitude-encoding federated model updates onto qubits makes them cheaper to share — and why, honestly counted, it doesn't.">
+<meta property="og:title" content="Quantum Federated Learning — Noah Wijnheijmer">
+<meta property="og:description" content="A three-month internship at Infosys Bangalore, and a negative result worth writing down.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230A0B0D'/><text y='.9em' x='50%25' text-anchor='middle' font-size='58' font-family='Georgia,serif' fill='%238FD9CE'>N</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0B0D; --bg-2:#0E0F13; --surface:#131419; --surface-2:#171920;
+  --line:#23252D; --line-soft:#1A1C22;
+  --text:#EAEAE6; --muted:#8B909A; --dim:#5C616C;
+  --accent:#8FD9CE; --accent-2:#6FBFB4; --accent-wash:rgba(143,217,208,.10);
+  --warn:#E0A85C;
+  --display:'Instrument Serif',Georgia,serif;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,'SF Mono',SFMono-Regular,Menlo,Consolas,monospace;
+  --wrap:900px; --ease:cubic-bezier(.22,.7,.3,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:90px}
+body{margin:0; background:var(--bg); color:var(--text); font-family:var(--sans); font-weight:300;
+  font-size:16px; line-height:1.66; -webkit-font-smoothing:antialiased; overflow-x:hidden}
+::selection{background:var(--accent); color:#08201D}
+img{max-width:100%; display:block}
+button{font:inherit; color:inherit}
+.aura{position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:radial-gradient(720px 520px at 82% -10%, rgba(143,217,208,.085), transparent 62%),
+             radial-gradient(520px 400px at 0% 40%, rgba(143,217,208,.032), transparent 60%)}
+.grain{position:fixed; inset:0; pointer-events:none; z-index:1; opacity:.16; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
+.progress{position:fixed; top:0; left:0; height:1.5px; width:0; background:var(--accent); z-index:60; transition:width .08s linear}
+
+.nav{position:sticky; top:0; z-index:50; backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  background:rgba(10,11,13,.78); border-bottom:1px solid var(--line-soft)}
+.nav-in{max-width:var(--wrap); margin:0 auto; padding:0 28px; height:62px; display:flex; align-items:center; gap:18px}
+.back{display:inline-flex; align-items:center; gap:9px; text-decoration:none; font-size:13.5px; color:var(--muted);
+  margin-right:auto; transition:color .2s var(--ease)}
+.back:hover{color:var(--accent)}
+.back svg{transition:transform .22s var(--ease)}
+.back:hover svg{transform:translateX(-3px)}
+.nav-cta{font-size:12.5px; text-decoration:none; padding:7px 15px; border:1px solid var(--accent); border-radius:100px;
+  color:var(--accent); transition:.22s var(--ease); white-space:nowrap}
+.nav-cta:hover{background:var(--accent); color:#07201C}
+
+.wrap{max-width:var(--wrap); margin:0 auto; padding:0 28px; position:relative; z-index:2}
+h1,h2,h3{font-weight:400; margin:0}
+.eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--accent); margin:0 0 18px}
+
+/* hero */
+.hd{padding:80px 0 56px}
+h1{font-family:var(--display); font-size:clamp(38px,6.4vw,62px); line-height:1.04; letter-spacing:-.018em; margin-bottom:22px; max-width:17ch}
+.dek{font-size:18px; color:var(--muted); max-width:62ch; margin:0 0 30px}
+.dek b{color:var(--text); font-weight:400}
+.facts{display:flex; flex-wrap:wrap; gap:10px}
+.fact{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
+  border:1px solid var(--line); border-radius:100px; padding:6px 14px}
+.fact.hot{color:var(--accent); border-color:var(--accent)}
+
+/* verdict */
+.verdict{border:1px solid var(--line); border-left:2px solid var(--accent); border-radius:0 14px 14px 0;
+  background:linear-gradient(100deg,var(--accent-wash),transparent 55%); padding:30px 34px; margin:0 0 12px}
+.verdict .k{font-family:var(--mono); font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--accent); margin-bottom:12px}
+.verdict p{margin:0; font-family:var(--display); font-size:25px; line-height:1.36; color:var(--text)}
+
+section{padding:64px 0; border-top:1px solid var(--line-soft)}
+h2{font-family:var(--display); font-size:clamp(26px,3.8vw,36px); line-height:1.14; letter-spacing:-.01em; margin-bottom:16px}
+p{margin:0 0 17px; color:var(--muted); max-width:68ch}
+p b{color:var(--text); font-weight:400}
+em{font-style:italic; color:var(--text)}
+.k-num{font-family:var(--mono); font-size:11px; letter-spacing:.2em; color:var(--dim); text-transform:uppercase; margin-bottom:14px}
+
+/* pipeline */
+.pipe{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line-soft);
+  border:1px solid var(--line-soft); border-radius:14px; overflow:hidden; margin:34px 0 10px}
+.step{background:var(--bg-2); padding:22px 20px 24px; position:relative; transition:background .3s var(--ease)}
+.step:hover{background:var(--surface)}
+.step .i{font-family:var(--mono); font-size:10px; color:var(--accent); letter-spacing:.16em; margin-bottom:10px}
+.step .t{font-size:14.5px; margin-bottom:6px; color:var(--text)}
+.step .d{font-size:12.5px; color:var(--muted); line-height:1.5}
+.loop{font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim); text-align:center; margin-bottom:0}
+
+/* strategy table */
+.tbl{border:1px solid var(--line-soft); border-radius:14px; overflow:hidden; margin:30px 0 8px}
+.trow{display:grid; grid-template-columns:1.1fr 2fr 130px; gap:20px; padding:20px 24px; background:var(--bg-2);
+  border-bottom:1px solid var(--line-soft); align-items:baseline; transition:background .3s var(--ease)}
+.trow:last-child{border-bottom:none}
+.trow:hover{background:var(--surface)}
+.trow.head{background:var(--surface); font-family:var(--mono); font-size:10.5px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--dim)}
+.trow .nm{font-size:14.5px; color:var(--text)}
+.trow .ds{font-size:13.5px; color:var(--muted)}
+.trow .ct{font-family:var(--mono); font-size:12px; color:var(--accent); white-space:nowrap}
+
+/* stats */
+.grid4{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line-soft);
+  border:1px solid var(--line-soft); border-radius:14px; overflow:hidden; margin:32px 0 8px}
+.gcell{background:var(--bg-2); padding:26px 22px; transition:background .3s var(--ease)}
+.gcell:hover{background:var(--surface)}
+.gcell .num{font-family:var(--display); font-size:32px; line-height:1; color:var(--accent); margin-bottom:9px}
+.gcell .lab{font-size:12.5px; color:var(--muted); line-height:1.5}
+
+/* pull */
+.pull{border-left:1px solid var(--accent); padding:4px 0 4px 26px; margin:34px 0; max-width:60ch}
+.pull p{font-family:var(--display); font-size:22px; line-height:1.4; color:var(--text); margin:0}
+
+/* caveat */
+.caveat{border:1px dashed var(--line); border-radius:12px; padding:22px 24px; margin-top:30px}
+.caveat .k{font-family:var(--mono); font-size:10.5px; letter-spacing:.18em; text-transform:uppercase; color:var(--warn); margin-bottom:11px}
+.caveat p{font-size:14px; margin:0 0 9px}
+.caveat p:last-child{margin:0}
+
+/* demo */
+.demo{border:1px solid var(--line); border-radius:18px; overflow:hidden; background:var(--surface-2); margin-top:36px}
+.demo-bar{display:flex; align-items:center; gap:14px; padding:16px 22px; border-bottom:1px solid var(--line);
+  background:var(--surface); flex-wrap:wrap}
+.dots{display:flex; gap:6px}
+.dots i{width:9px; height:9px; border-radius:50%; background:var(--line); display:block}
+.dots i:first-child{background:#3A3D46}
+.demo-ttl{font-family:var(--mono); font-size:11.5px; letter-spacing:.1em; color:var(--muted); margin-right:auto}
+.demo-open{font-size:12px; text-decoration:none; color:var(--accent); border:1px solid var(--accent);
+  border-radius:100px; padding:5px 14px; transition:.22s var(--ease)}
+.demo-open:hover{background:var(--accent); color:#07201C}
+.demo-frame{position:relative; height:640px; background:#fff}
+.demo-frame iframe{width:100%; height:100%; border:0; display:block}
+.demo-note{font-size:12.5px; color:var(--dim); margin:14px 0 0; text-align:center}
+
+.btn{display:inline-flex; align-items:center; gap:9px; text-decoration:none; font-size:14px; padding:11px 20px;
+  border-radius:100px; border:1px solid var(--line); transition:.24s var(--ease); color:var(--text)}
+.btn:hover{border-color:var(--accent); color:var(--accent); transform:translateY(-1px)}
+.btn.primary{background:var(--accent); color:#07201C; border-color:var(--accent); font-weight:500}
+.btn.primary:hover{background:var(--accent-2); border-color:var(--accent-2); color:#07201C}
+.actions{display:flex; flex-wrap:wrap; gap:12px; margin-top:32px}
+
+footer{border-top:1px solid var(--line-soft); padding:32px 0 46px; margin-top:20px}
+.foot{display:flex; justify-content:space-between; gap:18px; flex-wrap:wrap; font-size:12.5px; color:var(--dim)}
+.foot a{color:var(--muted); text-decoration:none}
+.foot a:hover{color:var(--accent)}
+
+.rv{opacity:0; transform:translateY(18px); transition:opacity .75s var(--ease), transform .75s var(--ease)}
+.rv.in{opacity:1; transform:none}
+
+@media(max-width:820px){
+  .pipe{grid-template-columns:1fr 1fr}
+  .grid4{grid-template-columns:1fr 1fr}
+  .trow{grid-template-columns:1fr; gap:7px}
+  .trow.head{display:none}
+  .demo-frame{height:520px}
+  .verdict{padding:24px 22px}
+  .verdict p{font-size:21px}
+  section{padding:52px 0}
+  .wrap{padding:0 20px}
+}
+@media(prefers-reduced-motion:reduce){*{transition-duration:.01ms!important} html{scroll-behavior:auto} .rv{opacity:1; transform:none}}
+</style>
+</head>
+<body>
+<div class="aura"></div><div class="grain"></div>
+<div class="progress" id="prog"></div>
+
+<nav class="nav">
+  <div class="nav-in">
+    <a href="index.html" class="back">
+      <svg width="13" height="9" viewBox="0 0 13 9" fill="none"><path d="M12 4.5H1M4.5 1L1 4.5 4.5 8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Noah Wijnheijmer
+    </a>
+    <a href="#demo" class="nav-cta">Jump to the demo</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<header class="hd">
+  <div class="eyebrow">Infosys Limited · Bangalore, India · 2026</div>
+  <h1>Privacy-preserving quantum federated learning</h1>
+  <p class="dek">A three-month internship spent asking one question: if a federated learning update is 32 real numbers, and 5 qubits can hold exactly 32 amplitudes, can you send the quantum object instead and save bandwidth? <b>Once every cost is counted honestly, no.</b> Showing exactly where and why is the actual contribution.</p>
+  <div class="facts">
+    <span class="fact hot">Quantum ML Intern</span>
+    <span class="fact">Jul – Sep 2026</span>
+    <span class="fact">3 nodes · 15 rounds</span>
+    <span class="fact">Negative result</span>
+  </div>
+</header>
+
+<div class="verdict rv">
+  <div class="k">The finding</div>
+  <p>It doesn't compress. And it fails <em>predictably</em> — at a rate you can write down, that widens the more accuracy you ask for.</p>
+</div>
+
+<!-- 1 -->
+<section class="rv">
+  <div class="k-num">01 — The setup</div>
+  <h2>One round, end to end</h2>
+  <p>Three federated nodes each train a small quantum classifier on their own data. Nobody is allowed to share the data, so every round they share a model update instead — and that sharing is the cost you're trying to shrink.</p>
+
+  <div class="pipe">
+    <div class="step"><div class="i">01</div><div class="t">Local train</div><div class="d">Three nodes, in parallel, on data that never leaves the node.</div></div>
+    <div class="step"><div class="i">02</div><div class="t">Encode</div><div class="d">32 real numbers, amplitude-encoded onto 5 qubits as a single object.</div></div>
+    <div class="step"><div class="i">03</div><div class="t">Decode &amp; aggregate</div><div class="d">Measure, recover sign, average the three updates on the server.</div></div>
+    <div class="step"><div class="i">04</div><div class="t">Broadcast</div><div class="d">Send the averaged model back out. Then do it 14 more times.</div></div>
+  </div>
+  <p class="loop">↺ repeated for 15 rounds</p>
+</section>
+
+<!-- 2 -->
+<section class="rv">
+  <div class="k-num">02 — The easy half</div>
+  <h2>32 numbers onto 5 qubits</h2>
+  <p>A quantum state on <b>n</b> qubits holds 2<sup>n</sup> amplitudes at once, and 2<sup>5</sup> is exactly 32. So the update gets split into two parts: a <b>length</b> — one number, sent as an ordinary classical float — and a <b>direction</b>, the 32 values rescaled so their own length is exactly 1, because a quantum state is required to have unit length.</p>
+  <p>Square those 32 direction values and they sum to exactly 1. That's a probability distribution over the 32 possible measurement outcomes of 5 qubits, which is precisely what the qubits can represent. Loading it on is cheap and it works.</p>
+  <div class="pull"><p>Getting the numbers onto the qubits was never the problem. Getting them back off is.</p></div>
+</section>
+
+<!-- 3 -->
+<section class="rv">
+  <div class="k-num">03 — The sign problem</div>
+  <h2>Measurement throws away the minus signs</h2>
+  <p>Measuring a quantum state returns a squared amplitude — a probability. Probabilities are never negative, so the sign of every one of those 32 numbers vanishes the moment you look. Three real strategies for dealing with that, compared on identical data and identical measurements:</p>
+
+  <div class="tbl">
+    <div class="trow head"><div>Strategy</div><div>How it handles sign</div><div>What it costs</div></div>
+    <div class="trow">
+      <div class="nm">Classical side-channel</div>
+      <div class="ds">Sign is sent separately as plain bits, exactly. Only magnitude is measured, so sign is never wrong — noise only ever affects size.</div>
+      <div class="ct">5 qubits + 64 bits</div>
+    </div>
+    <div class="trow">
+      <div class="nm">Interference readout</div>
+      <div class="ds">Sign is recovered from the measurement itself using an ancilla qubit. Converges to the right answer, but needs roughly twice the shots — splitting each measurement across two outcomes and subtracting is a less efficient use of every shot.</div>
+      <div class="ct">6 qubits + 32 bits</div>
+    </div>
+    <div class="trow">
+      <div class="nm">Signs discarded</div>
+      <div class="ds">No sign handling at all; every value is guessed positive. Cheapest, and it never improves no matter how much you spend — the error doesn't respond to effort.</div>
+      <div class="ct">5 qubits + 32 bits</div>
+    </div>
+  </div>
+  <p style="margin-top:20px">Discarding sign is worse than it sounds. In a typical harvested update, the parameters with negative true values held <b>69% of the total energy</b> — so guessing positive is wrong most often on exactly the components that matter most.</p>
+</section>
+
+<!-- 4 -->
+<section class="rv">
+  <div class="k-num">04 — The core math</div>
+  <h2>Why the gap widens with accuracy</h2>
+  <p>Classical compression and quantum measurement improve at fundamentally different rates, and this is the whole result in one line. <b>Each extra classical bit roughly halves the error. Each extra quantum shot buys only a square root's worth.</b></p>
+  <p>The classical curve is fitted to this project's own quant2 / quant4 / quant8 measurements: error ≈ 2.4 × 2<sup>−1.14×bits</sup>. The quantum curve isn't fitted at all — it's the closed form derived from sampling statistics, and it matched real measurements to within 4%: relative error ≈ 2.83 / √shots.</p>
+
+  <div class="grid4">
+    <div class="gcell"><div class="num">4.2</div><div class="lab">Classical bits per parameter to reach 1% relative error</div></div>
+    <div class="gcell"><div class="num">1,123</div><div class="lab">Quantum shots needed for the same 1% error</div></div>
+    <div class="gcell"><div class="num">33.8×</div><div class="lab">Honest cost penalty of quantum at that accuracy</div></div>
+    <div class="gcell"><div class="num">&lt;4%</div><div class="lab">Deviation between the closed form and real measurements</div></div>
+  </div>
+  <p style="margin-top:22px">The climb is the finding, not any single number on it. Ask for looser accuracy and the two approaches move closer; ask for stricter accuracy and the ratio runs away.</p>
+</section>
+
+<!-- 5 -->
+<section class="rv">
+  <div class="k-num">05 — Honest accounting</div>
+  <h2>Every scheme has two prices</h2>
+  <p>There's the optimistic price — count a single copy of the quantum state, 5 or 6 qubits, done — and the honest price, which counts every shot actually needed to read it back. <b>Every shot is a fresh copy that has to be sent.</b> For classical schemes the two numbers are identical. For quantum they are not close.</p>
+  <p>Sending the raw 32 numbers plainly costs 1,024 bits. That's the line worth measuring against: anything above it costs more than not compressing at all. Under honest accounting, the quantum schemes cross that line quickly.</p>
+  <div class="pull"><p>The naive bars don't move when you spend more. The honest ones do — which is the entire point.</p></div>
+</section>
+
+<!-- 6 -->
+<section class="rv">
+  <div class="k-num">06 — Future work, tested</div>
+  <h2>Does combining before measuring help?</h2>
+  <p>The obvious proposed fix: combine the three nodes' quantum states <em>before</em> anyone measures, so the server reads out one shared average instead of paying separately for each node. Whether it helps turns out to depend entirely on how alike the three updates already are.</p>
+  <p>If the three point in unrelated directions, combining first wins by close to its theoretical ceiling. If they already point the same way, there's nothing to gain and the two approaches tie. This project's own harvested updates measured a <b>mean pairwise alignment of about 0.72</b> — well toward the aligned end — so the real, measured benefit came out modest: roughly <b>20% fewer shots</b> for equal accuracy.</p>
+
+  <div class="caveat">
+    <div class="k">What this doesn't account for</div>
+    <p>The 20% figure prices the read-out saving only. It does not price the cost of <b>physically combining three separate quantum states</b> before measurement, which is a real and substantial obstacle on its own.</p>
+    <p>The alignment sweep in the demo uses synthetic vectors built so alignment can move smoothly; the marker shows where the real data actually sits. The interference mode shown is a calibrated approximation matched to this project's measured error ratio, not a literal reproduction of the circuit's exact probabilities.</p>
+  </div>
+</section>
+
+<!-- 7 -->
+<section id="demo" class="rv">
+  <div class="k-num">07 — See it run</div>
+  <h2>The interactive companion</h2>
+  <p>Rather than shipping static plots, I built the findings as a live companion. Every figure below is computed in your browser from this project's real data and formulas — move the sliders and the numbers genuinely recompute.</p>
+
+  <div class="demo">
+    <div class="demo-bar">
+      <span class="dots"><i></i><i></i><i></i></span>
+      <span class="demo-ttl">qfl-companion.html</span>
+      <a class="demo-open" href="qfl-companion.html" target="_blank" rel="noopener">Open full screen ↗</a>
+    </div>
+    <div class="demo-frame">
+      <iframe src="qfl-companion.html" title="Quantum Federated Learning — interactive companion" loading="lazy"></iframe>
+    </div>
+  </div>
+  <p class="demo-note">Best experienced full screen. Five tabs: amplitude encoding, sign recovery, bits vs. shots, honest cost, coherent aggregation.</p>
+
+  <div class="actions">
+    <a class="btn primary" href="qfl-companion.html" target="_blank" rel="noopener">Open the companion ↗</a>
+    <a class="btn" href="index.html">Back to the rest of my work</a>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="rv">
+  <div class="k-num">08 — Why it mattered to me</div>
+  <h2>The value of a clean negative</h2>
+  <p>I came to this from an applied AI background, and the instinct that degree gives you is to make something work. A second master's on the cognitive science track has been about the opposite instinct: sit with a problem on a fundamental mathematical basis until you understand what it can and can't do, before you commit to it.</p>
+  <p>This project needed both. The theory tells you where the square-root wall is. The applied side insists that a theory is only as good as its viability inside the system it has to live in — and that publishing "we tried this and here is precisely how it fails, with the numbers" is more useful to the next person than a result nudged into looking positive.</p>
+  <p>That's also why the companion recomputes everything live instead of shipping figures. If the finding is real, it should survive being poked at.</p>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div>© <span id="yr">2026</span> Noah Wijnheijmer</div>
+    <div style="display:flex; gap:20px">
+      <a href="index.html">Home</a>
+      <a href="qfl-companion.html">Companion</a>
+      <a href="mailto:n.s.wijnheijmer@student.vu.nl">Email</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+  document.getElementById('yr').textContent = new Date().getFullYear();
+  const prog = document.getElementById('prog');
+  const onScroll = () => {
+    const h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+    prog.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  };
+  addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }), {threshold:.1, rootMargin:'0px 0px -6% 0px'});
+  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+})();
+</script>
+</body>
+</html>
