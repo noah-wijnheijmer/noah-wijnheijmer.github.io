@@ -4,16 +4,50 @@
 <meta name="google-site-verification" content="heXCie2oMqv429IAQuNU76Sq0SNt1cFh-cpsTUKGhDo" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Noah Wijnheijmer — Machine Learning Engineer</title>
-<meta name="description" content="Noah Wijnheijmer — machine learning engineer. Quantum machine learning at Infosys, computer vision for brain imaging at CureQ, MSc Artificial Intelligence (Cognitive Science) at Vrije Universiteit Amsterdam.">
+<title>Noah Wijnheijmer | Portfolio & Personal Website</title>
+<meta name="title" content="Noah Wijnheijmer | Portfolio & Personal Website">
+<meta name="description" content="Personal website and portfolio of Noah Wijnheijmer. Discover my projects, experience, and links to my LinkedIn profile.">
+<meta name="keywords" content="Noah Wijnheijmer, Noah, Wijnheijmer, portfolio, machine learning engineer, quantum machine learning, computer vision, LinkedIn">
 <meta name="author" content="Noah Wijnheijmer">
-<meta property="og:title" content="Noah Wijnheijmer — Machine Learning Engineer">
-<meta property="og:description" content="Machine learning engineer. Quantum ML at Infosys, computer vision for brain imaging at CureQ, second MSc in AI at the VU.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://noah-wijnheijmer.github.io/">
+<meta property="og:site_name" content="Noah Wijnheijmer">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://noah-wijnheijmer.github.io/">
+<meta property="og:title" content="Noah Wijnheijmer | Portfolio & Personal Website">
+<meta property="og:description" content="Personal website and portfolio of Noah Wijnheijmer. Discover my projects, experience, and links to my LinkedIn profile.">
+<meta property="og:image" content="https://noah-wijnheijmer.github.io/assets/full_body.png">
+<meta property="og:image:alt" content="Noah Wijnheijmer portfolio preview">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="https://noah-wijnheijmer.github.io/">
+<meta name="twitter:title" content="Noah Wijnheijmer | Portfolio & Personal Website">
+<meta name="twitter:description" content="Personal website and portfolio of Noah Wijnheijmer. Discover my projects, experience, and links to my LinkedIn profile.">
+<meta name="twitter:image" content="https://noah-wijnheijmer.github.io/assets/full_body.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230A0B0D'/><text y='.9em' x='50%25' text-anchor='middle' font-size='58' font-family='Georgia,serif' fill='%238FD9CE'>N</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Noah Wijnheijmer",
+  "url": "https://noah-wijnheijmer.github.io/",
+  "image": "https://noah-wijnheijmer.github.io/assets/full_body.png",
+  "sameAs": [
+    "https://nl.linkedin.com/in/noah-wijnheijmer-8656a6b1"
+  ],
+  "jobTitle": "Machine Learning Engineer",
+  "description": "Personal website and portfolio of Noah Wijnheijmer.",
+  "knowsAbout": [
+    "Machine Learning",
+    "Quantum Machine Learning",
+    "Computer Vision",
+    "Data Science",
+    "Cognitive Science"
+  ]
+}
+</script>
 <style>
 :root{
   --bg:#0A0B0D; --bg-2:#0E0F13; --surface:#131419; --surface-2:#171920;
@@ -181,6 +215,23 @@ h1 .l2{display:block; color:var(--muted)}
 .feature p{color:var(--muted); font-size:15px; margin:0 0 14px; max-width:52ch}
 .qkicker{font-family:var(--mono); font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--dim); margin-bottom:14px}
 
+/* ---------- papers ---------- */
+.papers-intro{display:grid; grid-template-columns:1fr auto; gap:18px; align-items:end; margin-bottom:36px}
+.papers-intro .lede{margin:0; max-width:58ch}
+.paper-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px}
+.paper-card{background:linear-gradient(180deg,var(--surface-2),var(--surface)); border:1px solid var(--line); border-radius:16px; padding:26px 24px 24px; position:relative; overflow:hidden; transition:.28s var(--ease)}
+.paper-card:hover{border-color:var(--accent); transform:translateY(-2px)}
+.paper-card::before{content:''; position:absolute; inset:0 auto auto 0; width:100%; height:1px; background:linear-gradient(90deg,var(--accent),transparent); opacity:.25}
+.paper-card .tag{font-family:var(--mono); font-size:10px; letter-spacing:.15em; text-transform:uppercase; color:var(--dim); margin-bottom:12px}
+.paper-card h3{font-size:18px; margin-bottom:10px}
+.paper-card p{color:var(--muted); font-size:14px; margin:0 0 18px; max-width:38ch}
+.paper-card .paper-btn{display:inline-flex; align-items:center; justify-content:center; gap:9px; width:100%; text-decoration:none; font-size:13.5px; font-weight:500; color:#07201C; background:var(--accent); border:1px solid var(--accent); border-radius:100px; padding:12px 18px; box-shadow:0 10px 24px rgba(143,217,208,.14); transition:.24s var(--ease)}
+.paper-card .paper-btn:hover{background:var(--accent-2); border-color:var(--accent-2); transform:translateY(-1px)}
+.paper-card .paper-btn .arw{transition:transform .24s var(--ease)}
+.paper-card .paper-btn:hover .arw{transform:translateX(3px)}
+.paper-card.featured{border-color:var(--accent)}
+.paper-card.featured .tag{color:var(--accent)}
+
 /* ---------- cards ---------- */
 .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(268px,1fr)); gap:16px}
 .card{background:var(--surface); border:1px solid var(--line-soft); border-radius:14px; padding:26px 24px;
@@ -284,6 +335,7 @@ footer{border-top:1px solid var(--line-soft); padding:34px 0 46px}
   .split{grid-template-columns:1fr; gap:44px}
   .feature{grid-template-columns:1fr}
   .feature-r{border-left:none; border-top:1px solid var(--line)}
+  .papers-intro{grid-template-columns:1fr}
   .now{grid-template-columns:1fr}
   .hob{grid-template-columns:1fr}
   .edu-row{grid-template-columns:1fr; gap:8px}
@@ -324,6 +376,7 @@ footer{border-top:1px solid var(--line-soft); padding:34px 0 46px}
     <a href="#top" class="mark">Noah Wijnheijmer<span>.</span></a>
     <div class="nav-links" id="navlinks">
       <a href="#work">Work</a>
+      <a href="#papers">Papers</a>
       <a href="#quantum">Featured</a>
       <a href="#education">Education</a>
       <a href="#skills">Skills</a>
@@ -535,10 +588,51 @@ footer{border-top:1px solid var(--line-soft); padding:34px 0 46px}
   </div>
 </section>
 
+<!-- ============ PAPERS ============ -->
+<section id="papers">
+  <div class="rv">
+    <div class="eyebrow">02 — Papers</div>
+    <div class="papers-intro">
+      <div>
+        <h2>Papers</h2>
+        <p class="lede">Short, scannable summaries up front. The paper button is loud on purpose, so anyone who wants the full write-up can jump straight in.</p>
+      </div>
+      <div class="qkicker">Drop PDFs in <span style="color:var(--accent)">papers/</span></div>
+    </div>
+  </div>
+
+  <div class="paper-grid rv">
+    <article class="paper-card featured">
+      <div class="tag">Quantum ML · Infosys</div>
+      <h3>Privacy-preserving quantum federated learning</h3>
+      <p>Whether qubit encoding actually beats classical sharing once measurement noise is counted honestly.</p>
+      <a class="paper-btn" href="papers/quantum-federated-learning.pdf" target="_blank" rel="noopener">Read the paper <span class="arw">→</span></a>
+    </article>
+    <article class="paper-card">
+      <div class="tag">Computer vision · CureQ</div>
+      <h3>Brain imaging classification</h3>
+      <p>Computer vision for microscopy and brain imaging, with a handover-ready workflow the lab could keep using.</p>
+      <a class="paper-btn" href="papers/brain-imaging-computer-vision.pdf" target="_blank" rel="noopener">Read the paper <span class="arw">→</span></a>
+    </article>
+    <article class="paper-card">
+      <div class="tag">Systems analysis · Kikkerland</div>
+      <h3>IT transition analysis</h3>
+      <p>Where process gaps appeared in the stack, and how to remove them without adding another layer of complexity.</p>
+      <a class="paper-btn" href="papers/system-transition-analysis.pdf" target="_blank" rel="noopener">Read the paper <span class="arw">→</span></a>
+    </article>
+    <article class="paper-card">
+      <div class="tag">Cognitive science · VU Amsterdam</div>
+      <h3>Applied AI and cognition notes</h3>
+      <p>A compact set of notes on learning, perception, and the foundations behind the systems I build.</p>
+      <a class="paper-btn" href="papers/cognitive-science-notes.pdf" target="_blank" rel="noopener">Read the paper <span class="arw">→</span></a>
+    </article>
+  </div>
+</section>
+
 <!-- ============ QUANTUM FEATURE ============ -->
 <section id="quantum">
   <div class="rv">
-    <div class="eyebrow">02 — Featured project</div>
+    <div class="eyebrow">03 — Featured project</div>
     <h2>Privacy-preserving quantum federated learning</h2>
     <p class="lede" style="margin-bottom:40px">Infosys, Bangalore, India 2026.</p>
   </div>
@@ -567,7 +661,7 @@ footer{border-top:1px solid var(--line-soft); padding:34px 0 46px}
 <!-- ============ EDUCATION ============ -->
 <section id="education">
   <div class="rv">
-    <div class="eyebrow">03 — Education</div>
+    <div class="eyebrow">04 — Education</div>
     <h2>Three degrees, on purpose</h2>
     <p class="lede" style="margin-bottom:40px">The applied one to learn how to build it. The theoretical one to understand what I was building.</p>
   </div>
@@ -602,7 +696,7 @@ footer{border-top:1px solid var(--line-soft); padding:34px 0 46px}
 <!-- ============ SKILLS ============ -->
 <section id="skills">
   <div class="rv">
-    <div class="eyebrow">04 — Capability</div>
+    <div class="eyebrow">05 — Capability</div>
     <h2>What I bring</h2>
     <p class="lede" style="margin-bottom:44px">Advanced model architectures, probabilistic and statistical models, and a stubborn emphasis on generalization and honest evaluation.</p>
   </div>
@@ -646,7 +740,7 @@ footer{border-top:1px solid var(--line-soft); padding:34px 0 46px}
 <!-- ============ WRITING ============ -->
 <section id="writing">
   <div class="rv">
-    <div class="eyebrow">05 — Writing</div>
+    <div class="eyebrow">06 — Writing</div>
     <h2>Notes in public</h2>
     <p class="lede" style="margin-bottom:36px">Working through the parts of AI I'm still chewing on.</p>
   </div>
@@ -664,7 +758,7 @@ footer{border-top:1px solid var(--line-soft); padding:34px 0 46px}
 <!-- ============ NEXT ============ -->
 <section id="next">
   <div class="rv">
-    <div class="eyebrow">06 — In progress</div>
+    <div class="eyebrow">07 — In progress</div>
     <h2>What's next (and not under an NDA)</h2>
     <p class="lede" style="margin-bottom:40px">I'm working on it... this stuff takes time.</p>
   </div>
@@ -691,7 +785,7 @@ footer{border-top:1px solid var(--line-soft); padding:34px 0 46px}
 <!-- ============ OFF-SCREEN ============ -->
 <section id="offscreen">
   <div class="rv">
-    <div class="eyebrow">07 — Away from the screen</div>
+    <div class="eyebrow">08 — Away from the screen</div>
     <h2>Off-screen</h2>
     <p class="lede" style="margin-bottom:40px">Ofcourse I have to play hard, how else do you think I work hard.</p>
   </div>
@@ -722,12 +816,12 @@ footer{border-top:1px solid var(--line-soft); padding:34px 0 46px}
 <!-- ============ CONTACT ============ -->
 <section id="contact" class="contact">
   <div class="rv">
-    <div class="eyebrow">08 — Contact</div>
+    <div class="eyebrow">09 — Contact</div>
     <h2>Feel free to poke my mind.</h2>
     <p class="lede">Open to conversations about machine learning research, Intelligence, and everything else that is worth exploring.</p>
     <div class="links">
       <a class="btn primary" href="mailto:n.s.wijnheijmer@student.vu.nl">n.s.wijnheijmer@student.vu.nl</a>
-      <a class="btn" href="https://nl.linkedin.com/in/noah-wijnheijmer-8656a6b1" target="_blank" rel="noopener">LinkedIn <span class="arw">↗</span></a>
+      <a class="btn" href="https://nl.linkedin.com/in/noah-wijnheijmer" target="_blank" rel="noopener">LinkedIn <span class="arw">↗</span></a>
       <a class="btn" href="#writing" id="medium-btn">Medium <span class="arw">↗</span></a>
     </div>
   </div>
@@ -740,7 +834,7 @@ footer{border-top:1px solid var(--line-soft); padding:34px 0 46px}
     <div>© <span id="yr">2026</span> Noah Wijnheijmer</div>
     <div class="foot-links">
       <a href="mailto:n.s.wijnheijmer@student.vu.nl">Email</a>
-      <a href="https://nl.linkedin.com/in/noah-wijnheijmer-8656a6b1" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://nl.linkedin.com/in/noah-wijnheijmer" target="_blank" rel="noopener">LinkedIn</a>
       <a href="quantum.html">Quantum</a>
       <a href="#top">Top</a>
     </div>
