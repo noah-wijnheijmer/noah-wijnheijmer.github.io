@@ -37,7 +37,7 @@
   "sameAs": [
     "https://nl.linkedin.com/in/noah-wijnheijmer-8656a6b1"
   ],
-  "jobTitle": "Machine Learning Engineer",
+  "jobTitle": "Machine Learning Engineer/Consultant",
   "description": "Personal website and portfolio of Noah Wijnheijmer.",
   "knowsAbout": [
     "Machine Learning",
@@ -169,6 +169,17 @@ h1 .l2{display:block; color:var(--muted)}
   background:linear-gradient(180deg,transparent,var(--line) 8%,var(--line) 92%,transparent)}
 .role-item{position:relative; margin-bottom:14px; transition:opacity .35s var(--ease), transform .35s var(--ease)}
 .role-item.hide{display:none}
+.role-item.secondary{opacity:.72}
+.role-item.secondary:hover,.role-item.secondary.open{opacity:1}
+.secondary-group{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-top:28px; padding-top:18px; border-top:1px solid var(--line-soft)}
+.secondary-label{font-family:var(--mono); font-size:10.5px; letter-spacing:.17em; text-transform:uppercase; color:var(--dim); margin-bottom:14px}
+.secondary-group .secondary-label{grid-column:1 / -1}
+.secondary-group .role-item{margin-bottom:0}
+.secondary-group .role-head{padding:16px 17px; gap:12px}
+.secondary-group .role-org{font-size:11px; margin-bottom:5px}
+.secondary-group .role-title{font-size:16px; margin-bottom:6px}
+.secondary-group .role-meta{font-size:12px; gap:4px 9px}
+.secondary-group .role-blurb{font-size:13px; margin-top:8px}
 .role-item::before{content:''; position:absolute; left:-30px; top:26px; width:9px; height:9px; border-radius:50%;
   background:var(--bg); border:1px solid var(--dim); transition:.28s var(--ease)}
 .role-item[data-star]::before{background:var(--accent); border-color:var(--accent); box-shadow:0 0 0 4px rgba(143,217,208,.13)}
@@ -359,6 +370,7 @@ footer{border-top:1px solid var(--line-soft); padding:34px 0 46px}
   .feature-r{padding:26px}
   .write-in{padding:28px 26px}
   .role-head{padding:18px 18px}
+  .secondary-group{grid-template-columns:1fr}
 }
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important; transition-duration:.01ms!important}
@@ -397,9 +409,8 @@ footer{border-top:1px solid var(--line-soft); padding:34px 0 46px}
     <div>
       <div class="status"><span class="dot"></span>Bangalore, India &nbsp;→&nbsp; Niseko, Japan</div>
       <h1>Noah<span class="l2">Wijnheijmer</span></h1>
-      <div class="role">Machine Learning Engineer</div>
-      <p>I build machine learning systems, and I care as much about <strong>why</strong> they work as whether they do.</p>
-      <p>Business engineering taught me to read a system before changing it. A master's in Applied AI taught me to ship one. My specialiazation in Cognitive (Neuro)Sciences gives me the tools to pursue the question underlying both:
+      <div class="role">Machine Learning Engineer/Consultant</div>
+      <p>I use business engineering to read a system and machine learning to change it. Specializing in Cognitive NeuroSciences gives me the tools to pursue the question underlying both:
 <span style="color: #2563eb;">"What is intelligence?"</span>
 </p>
       <div class="hero-actions">
@@ -441,10 +452,10 @@ footer{border-top:1px solid var(--line-soft); padding:34px 0 46px}
   </div>
 
   <div class="filters rv" id="filters">
-    <button class="chip on" data-f="all">Everything <span class="n">5</span></button>
+    <button class="chip on" data-f="all">Everything <span class="n">7</span></button>
     <button class="chip" data-f="ai">AI &amp; Research <span class="n">2</span></button>
     <button class="chip" data-f="eng">Engineering <span class="n">2</span></button>
-    <button class="chip" data-f="people">Hospitality <span class="n">1</span></button>
+    <button class="chip" data-f="people">Other experience <span class="n">3</span></button>
   </div>
 
   <div class="tl" id="tl">
@@ -487,7 +498,7 @@ footer{border-top:1px solid var(--line-soft); padding:34px 0 46px}
           <div class="role-org">CureQ — research consortium</div>
           <div class="role-title">AI Research Intern &amp; Master's Thesis</div>
           <div class="role-meta"><span>Netherlands</span><span>Feb – Jun 2025</span><span>Computer vision</span></div>
-          <p class="role-blurb">Computer vision on microscopy and brain imaging data — and the tooling that let the lab keep using it after I left.</p>
+          <p class="role-blurb">Computer vision on microscopy and brain imaging data</p>
         </div>
         <!-- <div class="role-media">
           <img class="role-thumb" src="assets/BSc_grad%202.jpeg" alt="BSc graduation photo">
@@ -500,8 +511,8 @@ footer{border-top:1px solid var(--line-soft); padding:34px 0 46px}
         <div class="role-body-in">
           <ul>
             <li>Developed a model for <b>analyzing and classifying microscopy data using computer vision</b>, together with an accompanying GUI and a reusable Python library.</li>
-            <li>Master's thesis: applying computer vision to <b>brain imaging data</b> — the point where my interest in AI and in cognitive science first properly collided.</li>
-            <li>Built for handover, not for a demo. The library and interface meant researchers could run the analysis without a developer in the loop.</li>
+            <li>Master's thesis: applying computer vision to <b>brain imaging data</b></li>
+            <li>Built for handover, the library and interface meant researchers could run the analysis without a developer in the loop.</li>
             <li>This project is the reason I went looking for a more theoretical deep dive afterwards. I had the practical skills; I wanted the foundations underneath them.</li>
           </ul>
         </div>
@@ -515,7 +526,7 @@ footer{border-top:1px solid var(--line-soft); padding:34px 0 46px}
           <div class="role-org">Kikkerland Design Inc.</div>
           <div class="role-title">Systems &amp; Data Analyst</div>
           <div class="role-meta"><span>New York City, USA</span><span>Feb – Aug 2024</span><span>Bachelor capstone</span></div>
-          <p class="role-blurb">Six months in New York overseeing a systems transition — the practical end of a business engineering degree, and where the data science minor stopped being theoretical.</p>
+          <p class="role-blurb">Six months in New York overseeing a full-scale B2B sales systems transition.</p>
         </div>
         <!-- <div class="role-media">
           <img class="role-thumb" src="assets/cocktail_kleur.png" alt="Kikkerland Design Inc. systems and data analyst">
@@ -536,30 +547,6 @@ footer{border-top:1px solid var(--line-soft); padding:34px 0 46px}
       </div>
     </article>
 
-    <!-- Elitehavens -->
-    <article class="role-item rv" data-tags="people">
-      <button class="role-head" aria-expanded="false">
-        <div class="role-main">
-          <div class="role-org">Elitehavens</div>
-          <div class="role-title">Luxury Chalet Host</div>
-          <div class="role-meta"><span>Niseko, Japan</span><span>Summer 2026 · Winter 2026/27</span><span>Returning</span></div>
-          <p class="role-blurb">A month in the summer, and the full winter season ahead. Hosting guests in luxury chalets at the foot of the best snow on the planet.</p>
-        </div>
-        <span class="caret" aria-hidden="true">
-          <svg width="11" height="7" viewBox="0 0 11 7" fill="none"><path d="M1 1l4.5 4.5L10 1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-        </span>
-      </button>
-      <div class="role-body">
-        <div class="role-body-in">
-          <ul>
-            <li>Host for <b>luxury chalets in Niseko</b>, responsible for the guest experience from arrival to departure.</li>
-            <li>Worked one month over the summer and was asked back for the <b>full winter season</b>.</li>
-            <li>Guests arrive from everywhere, with high expectations and very little patience for excuses — good practice for reading what people actually need rather than what they said.</li>
-            <li>And the honest reason: Niseko has the snow, and I ride. Committing to a whole season there was not a difficult decision.</li>
-          </ul>
-        </div>
-      </div>
-    </article>
 
     <!-- Bol -->
     <article class="role-item rv" data-tags="eng">
@@ -568,7 +555,7 @@ footer{border-top:1px solid var(--line-soft); padding:34px 0 46px}
           <div class="role-org">Bol.com</div>
           <div class="role-title">Store Operations &amp; Innovation</div>
           <div class="role-meta"><span>Utrecht, Netherlands</span><span>Feb – Jul 2023</span></div>
-          <p class="role-blurb">Implementing store improvements and innovations during the business engineering years.</p>
+          <p class="role-blurb">Implementing store improvements and innovations at one of the largest e-commerce platforms in the Europe.</p>
         </div>
         <!-- <img class="role-thumb" src="assets/bol_foto_kleur.jpg" alt="Bol.com store operations and innovations"> -->
         <span class="caret" aria-hidden="true">
@@ -579,12 +566,86 @@ footer{border-top:1px solid var(--line-soft); padding:34px 0 46px}
         <div class="role-body-in">
           <ul>
             <li>Identified and implemented <b>improvements and innovations</b> across store operations.</li>
-            <li>First serious exposure to process analysis at scale, and to how much of a real operation is invisible until you measure it.</li>
+            <li>Enabled sales team to leverage data-driven insights for process analysis at scale through automation and analytics.</li>
           </ul>
         </div>
       </div>
     </article>
 
+    <div class="secondary-group">
+    <div class="secondary-label">Other experience</div>
+
+    <!-- Elitehavens -->
+    <article class="role-item secondary rv" data-tags="people">
+      <button class="role-head" aria-expanded="false">
+        <div class="role-main">
+          <div class="role-org">Elitehavens</div>
+          <div class="role-title">Luxury Chalet Host</div>
+          <div class="role-meta"><span>Niseko, Japan</span><span>Summer 2026 · Winter 2026/27</span><span>Returning</span></div>
+          <p class="role-blurb">A month in the summer, and the full winter season ahead. Hosting guests in luxury chalets in Niseko, Japan.</p>
+        </div>
+        <span class="caret" aria-hidden="true">
+          <svg width="11" height="7" viewBox="0 0 11 7" fill="none"><path d="M1 1l4.5 4.5L10 1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        </span>
+      </button>
+      <div class="role-body">
+        <div class="role-body-in">
+          <ul>
+            <li>Responsible for the guest experience from arrival to departure.</li>
+            <li>Worked one month over the summer and was asked back for the <b>full winter season</b>.</li>
+            <li>Guests arrive from everywhere, with high expectations and very little patience for excuses good practice for reading what people actually need rather than what they said.</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <!-- TheSalesCompany -->
+    <article class="role-item secondary rv" data-tags="people">
+      <button class="role-head" aria-expanded="false">
+        <div class="role-main">
+          <div class="role-org">TheSalesCompany</div>
+          <div class="role-title">Sales Employee</div>
+          <div class="role-meta"><span>Maastricht, Netherlands</span><span>Oct 2020 – Dec 2021</span></div>
+        </div>
+        <span class="caret" aria-hidden="true">
+          <svg width="11" height="7" viewBox="0 0 11 7" fill="none"><path d="M1 1l4.5 4.5L10 1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        </span>
+      </button>
+      <div class="role-body">
+        <div class="role-body-in">
+          <ul>
+            <li>Conducted door-to-door sales pitches at residential properties to market charitable causes.</li>
+            <li>Built instant rapport with prospective customers on their doorstep and handled objections in real time.</li>
+            <li>Managed assigned local territories to maximize daily outreach and hit conversion targets.</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <!-- TopTutors foundation -->
+    <article class="role-item secondary rv" data-tags="people">
+      <button class="role-head" aria-expanded="false">
+        <div class="role-main">
+          <div class="role-org">TopTutors foundation</div>
+          <div class="role-title">Managing Tutor</div>
+          <div class="role-meta"><span>Region Limburg, Netherlands</span><span>Dec 2020 – Feb 2022</span></div>
+        </div>
+        <span class="caret" aria-hidden="true">
+          <svg width="11" height="7" viewBox="0 0 11 7" fill="none"><path d="M1 1l4.5 4.5L10 1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        </span>
+      </button>
+      <div class="role-body">
+        <div class="role-body-in">
+          <ul>
+            <li>Managed a portfolio of secondary education tutors, overseeing their performance and matching them with students.</li>
+            <li>Coordinated educational schedules, monitored progress, and ensured quality tutoring standards across the foundation.</li>
+            <li>Acted as the primary point of contact for tutors, parents  and participating schools to resolve issues and streamline communication.</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    </div>
   </div>
 </section>
 
@@ -639,10 +700,9 @@ footer{border-top:1px solid var(--line-soft); padding:34px 0 46px}
   <div class="feature rv">
     <div class="feature-l">
       <div class="qkicker">Infosys Limited · 2026</div>
-      <h3>Can you make federated updates cheaper by putting them on qubits?</h3>
+      <h3>Can you make federated updates cheaper encoding them on qubits?</h3>
       <p>Three federated nodes train a small quantum classifier and have to share an update every round. An update is 32 real numbers, and 5 qubits can hold exactly 32 amplitudes. So the idea is to send 1 quantum object instead of 32 numbers.</p>
-      <p>Loading them on is the easy half. Reading them back out is where it falls apart: measurement returns probabilities, so sign is lost, and every shot is a fresh copy that has to be sent. Count that honestly and the compression disappears.</p>
-      <p>The interesting part isn't that it fails. It's that it fails <em>predictably</em>, at a rate I can prove.</p>
+      <p>Loading them on is the easy half. Reading them back out is where it falls apart: measurement returns probabilities, so sign is lost, and every shot is a fresh copy that has to be sent. I quantify and prove just how much bandwith this costs.</p>
       <div class="hero-actions" style="margin-top:28px">
         <a href="quantum.html" class="btn primary">Read the full story <span class="arw">→</span></a>
         <a href="qfl-companion.html" class="btn">Interactive companion</a>
@@ -786,7 +846,7 @@ footer{border-top:1px solid var(--line-soft); padding:34px 0 46px}
   <div class="rv">
     <div class="eyebrow">08 — Away from the screen</div>
     <h2>Off-screen</h2>
-    <p class="lede" style="margin-bottom:40px">Ofcourse I have to play hard, how else do you think I work hard.</p>
+    <p class="lede" style="margin-bottom:40px">Ofcourse I play hard, how else do you think I can work hard.</p>
   </div>
   <div class="hob rv">
     <div class="hob-card big">
