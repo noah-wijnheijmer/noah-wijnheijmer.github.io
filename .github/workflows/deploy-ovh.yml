@@ -1,7 +1,7 @@
 name: Deploy to OVH
 
-# Uploads the site to wijnheijmer.com (OVH hosting, folder www/) on every push to main.
-# Only changed files are uploaded after the first run.
+# Uploads the site to wijnheijmer.com (OVH hosting, folder www/) over SFTP on every
+# push to main. Files deleted from the repo are deleted from the server too.
 # Needs one repository secret: OVH_FTP_PASSWORD
 # (repo Settings -> Secrets and variables -> Actions -> New repository secret).
 
@@ -17,30 +17,40 @@ concurrency:
   group: deploy-ovh
   cancel-in-progress: false
 
+env:
+  SFTP_HOST: ftp.cluster129.hosting.ovh.net
+  SFTP_USER: wijnhez
+  # OVH's public host key: the upload refuses to connect to any server without it
+  SFTP_HOST_KEY: "ftp.cluster129.hosting.ovh.net ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPHzGPnvg+XUpaMELjQ4AIj/6pkjvvHYCUxDVpcdaC8T"
+
 jobs:
   upload:
     runs-on: ubuntu-latest
     env:
-      FTP_PASSWORD: ${{ secrets.OVH_FTP_PASSWORD }}
+      LFTP_PASSWORD: ${{ secrets.OVH_FTP_PASSWORD }}
     steps:
       - name: Waiting for the OVH_FTP_PASSWORD secret
-        if: env.FTP_PASSWORD == ''
+        if: env.LFTP_PASSWORD == ''
         run: echo "::warning::Add the OVH_FTP_PASSWORD secret, then re-run this workflow to deploy."
 
       - uses: actions/checkout@v7
-        if: env.FTP_PASSWORD != ''
+        if: env.LFTP_PASSWORD != ''
 
-      - name: Upload changed files to OVH
-        if: env.FTP_PASSWORD != ''
-        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
-        with:
-          server: ftp.cluster129.hosting.ovh.net
-          username: wijnhez
-          password: ${{ secrets.OVH_FTP_PASSWORD }}
-          protocol: ftps
-          server-dir: www/
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/.github/**
-            **/.DS_Store
+      - name: Install lftp and trust only OVH's host key
+        if: env.LFTP_PASSWORD != ''
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq lftp
+          mkdir -p ~/.ssh
+          echo "$SFTP_HOST_KEY" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Upload to OVH over SFTP
+        if: env.LFTP_PASSWORD != ''
+        run: |
+          lftp --env-password -u "$SFTP_USER" "sftp://$SFTP_HOST" -e "
+            set sftp:connect-program 'ssh -a -x -o StrictHostKeyChecking=yes';
+            set net:max-retries 2;
+            set net:timeout 30;
+            mirror --reverse --delete --parallel=2 --verbose --exclude '^\.git' ./ www/;
+            bye"
