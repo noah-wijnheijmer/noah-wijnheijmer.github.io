@@ -1,0 +1,46 @@
+name: Deploy to OVH
+
+# Uploads the site to wijnheijmer.com (OVH hosting, folder www/) on every push to main.
+# Only changed files are uploaded after the first run.
+# Needs one repository secret: OVH_FTP_PASSWORD
+# (repo Settings -> Secrets and variables -> Actions -> New repository secret).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-ovh
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    env:
+      FTP_PASSWORD: ${{ secrets.OVH_FTP_PASSWORD }}
+    steps:
+      - name: Waiting for the OVH_FTP_PASSWORD secret
+        if: env.FTP_PASSWORD == ''
+        run: echo "::warning::Add the OVH_FTP_PASSWORD secret, then re-run this workflow to deploy."
+
+      - uses: actions/checkout@v7
+        if: env.FTP_PASSWORD != ''
+
+      - name: Upload changed files to OVH
+        if: env.FTP_PASSWORD != ''
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ftp.cluster129.hosting.ovh.net
+          username: wijnhez
+          password: ${{ secrets.OVH_FTP_PASSWORD }}
+          protocol: ftps
+          server-dir: www/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/.github/**
+            **/.DS_Store
