@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QFL Project: Interactive Companion</title>
+<style>
+  :root{
+    --navy:#1B2A4A; --navy-deep:#12203A; --navy-panel:#24365C;
+    --good:#1C8C7A; --bad:#D6453D; --neutral-num:#5A6378;
+    --true-bar:#C7CCDA; --amber:#B5721A; --amber-d:#E8A33D;
+    --card:#F2F5F9; --card-line:#E2E6EC;
+    --ink:#1B2A4A; --ink-muted:#5C6579; --paper:#FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    line-height:1.55; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:980px; margin:0 auto; padding:0 22px 70px;}
+
+  .topbar{background:var(--navy); color:#fff; padding:20px 0 0;}
+  .topbar-inner{max-width:980px; margin:0 auto; padding:0 22px;}
+  .brand-eyebrow{font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--amber-d); margin:0 0 6px;}
+  .brand-title{font-family:Cambria,Georgia,serif; font-size:24px; font-weight:700; margin:0 0 18px; color:#fff;}
+  .tabnav{display:flex; gap:4px; flex-wrap:wrap; border-bottom:1px solid #2E3F63; padding-bottom:0;}
+  .tab-btn{
+    background:none; border:none; color:#AEB9D6; font-family:inherit; font-size:13.5px; font-weight:700;
+    padding:11px 16px; cursor:pointer; border-bottom:3px solid transparent; transition:color .15s ease;
+    white-space:nowrap;
+  }
+  .tab-btn:hover{color:#fff;}
+  .tab-btn.active{color:#fff; border-bottom-color:var(--amber-d);}
+  .tab-btn:focus-visible{outline:2px solid var(--amber-d); outline-offset:-2px;}
+
+  .tab-content{display:none; padding-top:36px;}
+  .tab-content.active{display:block;}
+
+  .eyebrow{font-size:12.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--amber); margin:0 0 14px;}
+  h1{font-family:Cambria,Georgia,serif; font-size:clamp(24px,3.6vw,32px); font-weight:700; line-height:1.16; margin:0 0 14px; color:var(--navy);}
+  h2{font-family:Cambria,Georgia,serif; font-size:18px; font-weight:700; color:var(--navy); margin:0 0 10px;}
+  p{margin:0 0 12px;}
+  .lede{font-size:15.5px; color:var(--ink-muted); max-width:700px;}
+  .lede b{color:var(--ink); font-weight:700;}
+  .section{margin:30px 0;}
+  .section:first-of-type{margin-top:0;}
+
+  .panel{background:var(--card); border-radius:14px; padding:22px 26px; margin-bottom:18px;}
+  .panel-tight{padding:16px 20px;}
+
+  .picker-label{font-size:12.5px; font-weight:700; color:var(--ink-muted); letter-spacing:.03em; text-transform:uppercase; margin-bottom:12px;}
+  .picker-subnote{font-size:11.5px; color:var(--ink-muted); font-weight:400; letter-spacing:0; text-transform:none; margin-bottom:12px;}
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap;}
+  .pbtn{
+    flex:1 1 120px; min-width:100px; background:var(--paper); border:1.5px solid var(--card-line); border-radius:10px;
+    padding:9px 11px; cursor:pointer; text-align:left; font-family:inherit; transition:border-color .15s ease, background .15s ease;
+  }
+  .pbtn:hover{border-color:var(--navy);}
+  .pbtn:focus-visible{outline:3px solid var(--amber-d); outline-offset:1px;}
+  .pbtn.active{background:var(--navy); border-color:var(--navy);}
+  .pbtn .plabel{display:block; font-size:13px; font-weight:700; color:var(--navy);}
+  .pbtn.active .plabel{color:#fff;}
+  .pbtn .pstat{display:block; font-size:11px; color:var(--ink-muted); margin-top:2px; font-family:"SF Mono","Roboto Mono",ui-monospace,monospace;}
+  .pbtn.active .pstat{color:#AEB9D6;}
+
+  .controls{display:flex; align-items:center; gap:22px; flex-wrap:wrap;}
+  .slider-block{flex:1 1 340px; min-width:260px; position:relative;}
+  .slider-label{display:flex; justify-content:space-between; align-items:baseline; font-size:13px; font-weight:700; color:var(--ink-muted); letter-spacing:.03em; text-transform:uppercase; margin-bottom:10px;}
+  .readout-wrap{display:flex; align-items:baseline; gap:10px;}
+  .inline-readout{font-family:"SF Mono","Roboto Mono",ui-monospace,Menlo,Consolas,monospace; font-size:17px; font-weight:700; color:var(--navy);}
+  .pill{font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:3px 9px; border-radius:999px; background:var(--navy); color:#fff; white-space:nowrap;}
+  .slider-track-wrap{position:relative; padding-top:16px;}
+  .marker{position:absolute; top:0; width:0; height:14px; border-left:2px dashed var(--amber);}
+  .marker span{position:absolute; top:-2px; left:5px; font-size:10.5px; font-weight:700; color:var(--amber); white-space:nowrap;}
+  input[type=range]{width:100%; height:6px; -webkit-appearance:none; appearance:none; background:linear-gradient(90deg,var(--navy),var(--card-line)); border-radius:999px; outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:22px; height:22px; border-radius:50%; background:var(--navy); border:3px solid var(--paper); box-shadow:0 1px 4px rgba(0,0,0,.28); cursor:pointer; margin-top:-1px;}
+  input[type=range]::-moz-range-thumb{width:22px; height:22px; border-radius:50%; background:var(--navy); border:3px solid var(--paper); box-shadow:0 1px 4px rgba(0,0,0,.28); cursor:pointer;}
+  input[type=range]:focus-visible::-webkit-slider-thumb{outline:3px solid var(--amber-d); outline-offset:2px;}
+  .ticks{display:flex; justify-content:space-between; font-size:11px; color:var(--ink-muted); margin-top:8px; font-family:"SF Mono","Roboto Mono",ui-monospace,monospace;}
+  button.action-btn{flex:0 0 auto; background:var(--navy); color:#fff; border:none; border-radius:10px; padding:13px 20px; font-size:14px; font-weight:700; cursor:pointer; transition:transform .12s ease, background .15s ease; font-family:inherit;}
+  button.action-btn:hover{background:var(--navy-deep);}
+  button.action-btn:active{transform:scale(.97);}
+  button.action-btn:focus-visible{outline:3px solid var(--amber-d); outline-offset:2px;}
+
+  .cost-line{margin-top:16px; padding-top:14px; border-top:1px solid var(--card-line); font-size:13.5px; color:var(--ink-muted); display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;}
+  .cost-line b{font-family:"SF Mono","Roboto Mono",ui-monospace,Menlo,Consolas,monospace; color:var(--navy); font-size:14.5px;}
+  .cost-line b.over{color:var(--bad);}
+
+  .readouts3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:18px;}
+  @media (max-width:720px){ .readouts3{grid-template-columns:1fr;} }
+  .readout-card{background:var(--card); border:1.5px solid var(--card-line); border-radius:14px; padding:18px 18px;}
+  .readout-card.selected{border-color:var(--navy); background:#EAEFF7;}
+  .readout-label{font-size:11.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--navy); margin-bottom:6px;}
+  .readout-value{font-family:"SF Mono","Roboto Mono",ui-monospace,Menlo,Consolas,monospace; font-size:30px; font-weight:700; line-height:1; margin-bottom:6px; color:var(--neutral-num); transition:color .25s ease;}
+  .readout-caption{font-size:12px; color:var(--ink-muted);}
+  .readout-cost{font-size:11.5px; color:var(--ink-muted); margin-top:6px; font-family:"SF Mono","Roboto Mono",ui-monospace,monospace;}
+
+  .mode-toggle{display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;}
+  .mtbtn{background:var(--paper); border:1.5px solid var(--card-line); border-radius:8px; padding:7px 14px; font-size:12.5px; font-weight:700; color:var(--ink-muted); cursor:pointer; font-family:inherit;}
+  .mtbtn.active{background:var(--navy); border-color:var(--navy); color:#fff;}
+  .mtbtn:focus-visible{outline:3px solid var(--amber-d); outline-offset:1px;}
+
+  .chart-panel h3{font-size:14.5px; font-weight:700; margin:0 0 4px; color:var(--navy);}
+  .chart-panel .chart-note{font-size:12px; color:var(--ink-muted); margin:0 0 14px;}
+  svg.chart{width:100%; height:auto; display:block; overflow:visible;}
+  .bar-true{fill:var(--true-bar);}
+  .bar-recon{transition:y .28s ease, height .28s ease, fill .28s ease;}
+  .bar-recon.match{fill:var(--good);}
+  .bar-recon.mismatch{fill:var(--bad);}
+  .zero-line{stroke:#B9C0CE; stroke-width:1;}
+  .refline{stroke:var(--amber); stroke-width:1.5; stroke-dasharray:5,4;}
+  .refline-label{font-size:10px; fill:var(--amber); font-family:-apple-system,sans-serif; font-weight:700;}
+  .cbar-label{font-size:9.5px; fill:var(--ink-muted); font-family:-apple-system,sans-serif;}
+  .cbar-value{font-size:9.5px; fill:var(--navy); font-family:"SF Mono",monospace; font-weight:700;}
+
+  .legend{display:flex; gap:18px; flex-wrap:wrap; font-size:12px; color:var(--ink-muted); margin-top:14px;}
+  .legend span{display:inline-flex; align-items:center; gap:6px;}
+  .swatch{width:10px; height:10px; border-radius:3px; display:inline-block;}
+
+  table.datatable{width:100%; border-collapse:collapse; font-size:13.5px;}
+  table.datatable th{text-align:left; font-size:11.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-muted); padding:8px 10px; border-bottom:2px solid var(--card-line);}
+  table.datatable td{padding:10px 10px; border-bottom:1px solid var(--card-line); font-family:"SF Mono","Roboto Mono",ui-monospace,monospace;}
+  table.datatable td.label{font-family:inherit; font-weight:600; color:var(--navy);}
+  table.datatable tr.highlight td{background:#EAEFF7;}
+
+  .explain p{font-size:14px; color:var(--ink-muted);}
+  .explain b{color:var(--ink); font-weight:700;}
+  .stat-inline{display:inline-block; font-family:"SF Mono","Roboto Mono",ui-monospace,monospace; font-weight:700; color:var(--navy); background:var(--card); padding:1px 6px; border-radius:5px;}
+  .takeaway{font-size:14.5px; font-weight:700; color:var(--navy); border-left:3px solid var(--amber); padding-left:14px; margin:16px 0 0;}
+  .caveat{font-size:12.5px; color:var(--ink-muted); border-left:3px solid var(--card-line); padding-left:14px; margin-top:14px;}
+
+  .arch{display:flex; flex-direction:column; align-items:center; gap:6px; padding:8px 0 4px;}
+  .arch-row{display:flex; gap:14px; justify-content:center; flex-wrap:wrap;}
+  .arch-node{
+    background:#E4F1EE; border:1.5px solid var(--good); border-radius:10px; padding:10px 16px;
+    font-size:12.5px; font-weight:700; color:var(--good); cursor:pointer; position:relative; text-align:center; min-width:90px;
+  }
+  .arch-node .tip{
+    display:none; position:absolute; bottom:110%; left:50%; transform:translateX(-50%);
+    background:var(--navy); color:#fff; font-size:11px; font-weight:600; padding:6px 10px; border-radius:6px;
+    white-space:nowrap; z-index:5;
+  }
+  .arch-node:hover .tip{display:block;}
+  .arch-arrow{font-size:18px; color:var(--ink-muted); align-self:center;}
+  .arch-server{
+    background:var(--navy); color:#fff; border-radius:10px; padding:12px 22px; font-size:12.5px; font-weight:700;
+    cursor:pointer; position:relative; text-align:center;
+  }
+  .arch-server .tip{display:none; position:absolute; bottom:110%; left:50%; transform:translateX(-50%); background:var(--amber-d); color:var(--navy); font-size:11px; font-weight:700; padding:6px 10px; border-radius:6px; white-space:nowrap; z-index:5;}
+  .arch-server:hover .tip{display:block;}
+
+  .jumplist{list-style:none; margin:0; padding:0; display:grid; gap:8px;}
+  .jumplist li{background:var(--card); border-radius:10px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;}
+  .jumplist button{background:none; border:none; color:var(--navy); font-weight:700; font-size:13.5px; cursor:pointer; font-family:inherit; text-align:left;}
+  .jumplist button:hover{text-decoration:underline;}
+  .jumplist span{font-size:12.5px; color:var(--ink-muted);}
+
+  .source-note{font-size:11.5px; color:var(--ink-muted); margin-top:18px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <p class="brand-eyebrow">Interactive Companion</p>
+    <p class="brand-title">Privacy-Preserving Quantum Federated Learning</p>
+    <nav class="tabnav" id="tabnav">
+      <button class="tab-btn active" data-tab="overview">Overview</button>
+      <button class="tab-btn" data-tab="encoding">Amplitude Encoding</button>
+      <button class="tab-btn" data-tab="signs">Sign Recovery</button>
+      <button class="tab-btn" data-tab="scaling">Bits vs Shots</button>
+      <button class="tab-btn" data-tab="cost">Honest Cost</button>
+      <button class="tab-btn" data-tab="coherent">Coherent Aggregation</button>
+    </nav>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section class="tab-content active" id="tab-overview">
+    <div class="section">
+      <p class="eyebrow">Start Here</p>
+      <h1>Explore the Findings, Piece by Piece</h1>
+      <p class="lede">
+        Three federated nodes train a small quantum classifier and have to share an update every
+        round. This project asked whether encoding that update onto qubits could make the sharing
+        cheaper, without hurting accuracy. It doesn't, once every cost is counted honestly, but
+        showing exactly where and why is the actual contribution. Each tab below is a live,
+        working piece of that story, using this project's own real data and formulas.
+      </p>
+    </div>
+
+    <div class="section">
+      <h2>One round, end to end</h2>
+      <div class="panel">
+        <div class="arch">
+          <div class="arch-row">
+            <div class="arch-node">Local Train<span class="tip">3 nodes, in parallel</span></div>
+          </div>
+          <div class="arch-arrow">&#8595;</div>
+          <div class="arch-row">
+            <div class="arch-node">Encode<span class="tip">See: Amplitude Encoding</span></div>
+          </div>
+          <div class="arch-arrow">&#8595;</div>
+          <div class="arch-server">Decode &amp; Aggregate<span class="tip">See: Sign Recovery, Honest Cost</span></div>
+          <div class="arch-arrow">&#8595;</div>
+          <div class="arch-row">
+            <div class="arch-node">Broadcast<span class="tip">repeat for 15 rounds</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>What each tab shows</h2>
+      <ul class="jumplist" id="jumplist">
+        <li><button data-jump="encoding">Amplitude Encoding</button><span>How 32 real numbers get split and squeezed onto 5 qubits</span></li>
+        <li><button data-jump="signs">Sign Recovery</button><span>The three real strategies for handling sign, live, side by side</span></li>
+        <li><button data-jump="scaling">Bits vs Shots</button><span>The core math: why the gap between classical and quantum widens with accuracy</span></li>
+        <li><button data-jump="cost">Honest Cost</button><span>Every scheme's naive cost next to what it actually costs</span></li>
+        <li><button data-jump="coherent">Coherent Aggregation</button><span>Whether the future-work idea actually helps, and when</span></li>
+      </ul>
+    </div>
+
+    <p class="caveat">Not shown here: final training accuracy and convergence curves. Those come from one fixed, already-completed set of training runs rather than a relationship you can explore live, so they're presented as figures in the full write-up instead of reproduced here.</p>
+  </section>
+
+  <section class="tab-content" id="tab-encoding">
+    <div class="section">
+      <p class="eyebrow">The Core Idea</p>
+      <h1>32 Numbers, 5 Qubits</h1>
+      <p class="lede">
+        An update is 32 real numbers. A quantum state on <b>n</b> qubits can hold 2<sup>n</sup>
+        amplitudes at once, and 2<sup>5</sup> is exactly 32. So instead of sending 32 separate
+        numbers, the idea is to load them onto 5 qubits as one object. Here's what that loading
+        step actually does to a real update.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="picker-label">Choose a real update</div>
+      <div class="picker-subnote">5 of 18 real updates, picked to span a range of bias</div>
+      <div class="btn-row" id="encVectorButtons"></div>
+    </div>
+
+    <div class="panel">
+      <div class="controls" style="margin-bottom:4px;">
+        <div class="inline-readout" id="encNorm">norm = 3.474</div>
+        <div class="mode-toggle" style="margin:0;">
+          <button class="mtbtn active" id="encModeDir">Direction (signed)</button>
+          <button class="mtbtn" id="encModeProb">Probabilities (squared)</button>
+        </div>
+      </div>
+      <p class="chart-note" id="encChartNote">Each of the 32 numbers, divided by the vector's overall length. This is what actually gets loaded onto the qubits.</p>
+      <svg class="chart" id="encChart" viewBox="0 0 900 160"></svg>
+      <div class="legend">
+        <span><span class="swatch" style="background:var(--navy);"></span>direction value</span>
+        <span id="encSumCheck"></span>
+      </div>
+    </div>
+
+    <div class="section explain">
+      <h2>Where this fits</h2>
+      <p>
+        The 32 raw numbers are split into a <b>length</b> (one number, sent as a plain classical
+        float) and a <b>direction</b> (32 numbers, always rescaled so their own length is exactly
+        1). Only the direction goes onto qubits, because a quantum state is required to have unit
+        length. Square each direction value and you get 32 probabilities that sum to exactly 1,
+        which is what 5 qubits can represent: one probability per possible outcome, 2<sup>5</sup>
+        outcomes in total.
+      </p>
+      <p class="takeaway">Loading these 32 numbers onto 5 qubits is the easy, cheap half of the story. The Sign Recovery and Bits vs Shots tabs cover the hard half: reading them back out.</p>
+    </div>
+  </section>
+
+  <section class="tab-content" id="tab-signs">
+    <div class="section">
+      <p class="eyebrow">The Sign Problem</p>
+      <h1>Three Real Ways to Handle Sign</h1>
+      <p class="lede">
+        Measuring a quantum state only ever returns a squared amplitude, a probability, so the
+        sign of every number gets lost the moment you measure. Three real strategies for dealing
+        with that are compared here, live, on the same real update and the same measurement.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="picker-label">Choose a real update</div>
+      <div class="picker-subnote">5 of 18 real updates, picked to span a range of bias</div>
+      <div class="btn-row" id="signVectorButtons"></div>
+    </div>
+
+
+    <div class="panel">
+      <div class="controls">
+        <div class="slider-block">
+          <div class="slider-label">
+            <span>Measurement shots</span>
+            <span class="readout-wrap">
+              <span class="inline-readout" id="signShotReadout">200</span>
+              <span class="pill" id="signRegimePill">Building</span>
+            </span>
+          </div>
+          <input type="range" id="signShotSlider" min="0" max="100" value="45" step="1" aria-label="Measurement shots">
+          <div class="ticks"><span>10</span><span>1,000</span><span>50,000</span></div>
+        </div>
+        <button class="action-btn" id="signRemeasureBtn">Re-measure</button>
+      </div>
+    </div>
+
+    <div class="readouts3">
+      <div class="readout-card selected" id="cardClassical">
+        <div class="readout-label">Classical side-channel</div>
+        <div class="readout-value" id="cosClassical">0.000</div>
+        <div class="readout-caption">Sign sent as plain bits, exact. Only magnitude is measured.</div>
+        <div class="readout-cost" id="costClassical">5 qubits + 64 bits</div>
+      </div>
+      <div class="readout-card" id="cardInterference">
+        <div class="readout-label">Interference readout</div>
+        <div class="readout-value" id="cosInterference">0.000</div>
+        <div class="readout-caption">Sign recovered from the measurement itself, via an ancilla qubit.</div>
+        <div class="readout-cost" id="costInterference">6 qubits + 32 bits</div>
+      </div>
+      <div class="readout-card" id="cardDiscarded">
+        <div class="readout-label">Signs discarded</div>
+        <div class="readout-value" id="cosDiscarded">0.000</div>
+        <div class="readout-caption">No sign handling at all. Every value guessed positive.</div>
+        <div class="readout-cost" id="costDiscarded">5 qubits + 32 bits</div>
+      </div>
+    </div>
+
+    <div class="panel chart-panel">
+      <div class="mode-toggle">
+        <button class="mtbtn active" data-inspect="classical">Inspect: classical</button>
+        <button class="mtbtn" data-inspect="interference">Inspect: interference</button>
+        <button class="mtbtn" data-inspect="discarded">Inspect: discarded</button>
+      </div>
+      <h3 id="inspectTitle">Classical side-channel, bar by bar</h3>
+      <p class="chart-note">Pale bar: true value. Color checks direction only: teal means the colored bar points the same way as its pale bar, coral means the opposite way. Heights won't match exactly, especially at low shot counts. That gap is the shot noise itself.</p>
+      <svg class="chart" id="signChart" viewBox="0 0 900 160"></svg>
+      <div class="legend">
+        <span><span class="swatch" style="background:var(--true-bar);"></span>true value</span>
+        <span><span class="swatch" style="background:var(--good);"></span>correct side of zero</span>
+        <span><span class="swatch" style="background:var(--bad);"></span>wrong side of zero</span>
+      </div>
+    </div>
+
+    <div class="section explain">
+      <h2>Why the interference method sits in between</h2>
+      <p>
+        The classical side-channel never gets sign wrong. It's told the sign directly, exactly,
+        so only magnitude carries any noise. Signs discarded never gets sign right in any way
+        that responds to effort, since it never attempts to measure sign at all. Interference sits
+        between them on purpose: it recovers sign from the measurement itself using an extra
+        ancilla qubit, so it converges toward a perfect answer just like the classical side-channel
+        does, but it needs roughly <b>twice the shots</b> to get there, because splitting the
+        measurement across two outcomes and subtracting them is a less efficient use of each shot.
+      </p>
+      <p>
+        In the vector you're looking at, parameters with a negative true value hold
+        <span class="stat-inline" id="signNegPct">69%</span> of the total energy. That's why
+        signs-discarded settles near <span class="stat-inline" id="signTheoryCos">&minus;0.386</span>
+        instead of 0: always guessing positive is wrong most often on exactly the components that
+        matter most.
+      </p>
+      <p class="caveat">The interference mode shown here is a calibrated approximation matched to this project's measured error ratio (about 2&times; the classical side-channel's shots for equal fidelity), not a literal reproduction of the underlying circuit's exact probabilities.</p>
+    </div>
+  </section>
+
+  <section class="tab-content" id="tab-scaling">
+    <div class="section">
+      <p class="eyebrow">The Core Math</p>
+      <h1>Why the Gap Widens With Accuracy</h1>
+      <p class="lede">
+        Classical compression and quantum measurement improve at fundamentally different rates.
+        Each extra classical bit roughly halves the error. Each extra quantum shot buys only a
+        square root's worth. Pick a target accuracy below and see what each approach actually
+        costs to reach it.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="slider-block">
+        <div class="slider-label">
+          <span>Target relative error</span>
+          <span class="inline-readout" id="scaleErrReadout">20%</span>
+        </div>
+        <input type="range" id="scaleErrSlider" min="0" max="100" value="40" step="1" aria-label="Target relative error">
+        <div class="ticks"><span>60% (rough)</span><span>10%</span><span>1% (strict)</span></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <table class="datatable">
+        <thead><tr><th>Approach</th><th>What's spent</th><th>Honest cost</th></tr></thead>
+        <tbody>
+          <tr><td class="label">Classical (fitted to quant2/4/8)</td><td id="scaleBits">4.2 bits/parameter</td><td id="scaleClassicalCost">168 bits</td></tr>
+          <tr class="highlight"><td class="label">Quantum (measured closed form)</td><td id="scaleShots">1,123 shots</td><td id="scaleQuantumCost">5,679 bits</td></tr>
+        </tbody>
+      </table>
+      <div class="cost-line" style="border-top:none; margin-top:14px; padding-top:0;">
+        At this accuracy, quantum costs <b id="scaleRatio">33.8&times;</b> more than classical.
+      </div>
+    </div>
+
+    <div class="section explain">
+      <h2>Where these numbers come from</h2>
+      <p>
+        The classical curve is fitted to this project's own quant2 / quant4 / quant8 measurements:
+        roughly, error &asymp; 2.4 &times; 2<sup>&minus;1.14&times;bits</sup>. The quantum curve is
+        not fitted, it's the closed form derived from sampling statistics and confirmed against
+        real measurements to within 4%: relative error &asymp; 2.83 / &radic;shots.
+      </p>
+      <p class="takeaway">Drag toward stricter accuracy and watch the ratio climb. That climb, not any single number on it, is the actual finding.</p>
+    </div>
+  </section>
+
+  <section class="tab-content" id="tab-cost">
+    <div class="section">
+      <p class="eyebrow">The Cost Model</p>
+      <h1>Naive Cost vs What It Actually Costs</h1>
+      <p class="lede">
+        Every scheme has two prices: the optimistic one, counting a single copy, and the honest
+        one, counting every shot actually needed to read it back. For classical schemes those are
+        identical. Drag the slider and watch where the quantum bars really land.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="controls">
+        <div class="slider-block">
+          <div class="slider-label">
+            <span>Measurement shots (quantum schemes only)</span>
+            <span class="inline-readout" id="costShotReadout">200</span>
+          </div>
+          <input type="range" id="costShotSlider" min="0" max="100" value="45" step="1" aria-label="Measurement shots">
+          <div class="ticks"><span>10</span><span>1,000</span><span>50,000</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel chart-panel">
+      <h3>Cost per node, per round (log scale)</h3>
+      <p class="chart-note">Dashed line: sending the raw 32 numbers plainly, 1,024 bits. Anything above it costs more than not compressing at all.</p>
+      <svg class="chart" id="costChart" viewBox="0 0 900 260"></svg>
+      <div class="legend">
+        <span><span class="swatch" style="background:var(--true-bar);"></span>classical (fixed cost)</span>
+        <span><span class="swatch" style="background:#9FB3D9;"></span>quantum, naive (one copy)</span>
+        <span><span class="swatch" style="background:var(--navy);"></span>quantum, honest (every shot)</span>
+      </div>
+    </div>
+
+    <p class="caveat">Naive quantum bars don't move because they always count exactly one copy: 5 or 6 qubits, whatever the shot slider says. The honest bars are the ones that respond to it, because every shot is a fresh copy that has to be sent.</p>
+  </section>
+
+  <section class="tab-content" id="tab-coherent">
+    <div class="section">
+      <p class="eyebrow">Future Work, Tested Live</p>
+      <h1>Does Combining Before Measuring Actually Help?</h1>
+      <p class="lede">
+        One proposed fix: combine the three nodes' quantum states before anyone measures, so the
+        server reads out one shared average instead of paying to read each node separately.
+        Whether that helps turns out to depend entirely on how alike the three updates already are.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="slider-block">
+        <div class="slider-label">
+          <span>How aligned are the 3 nodes' updates</span>
+          <span class="inline-readout" id="alignReadout">0.72</span>
+        </div>
+        <div class="slider-track-wrap">
+          <div class="marker" id="alignMarker"><span>real data &#8776; 0.72</span></div>
+          <input type="range" id="alignSlider" min="0" max="100" value="72" step="1" aria-label="Alignment between node updates">
+        </div>
+        <div class="ticks"><span>0.0 (random directions)</span><span>0.5</span><span>1.0 (identical)</span></div>
+      </div>
+    </div>
+
+    <div class="readouts3" style="grid-template-columns:1fr 1fr;">
+      <div class="readout-card">
+        <div class="readout-label">Measure each node, then average</div>
+        <div class="readout-value" id="alignErrA">0.130</div>
+        <div class="readout-caption">What's already built. Every node pays its own read-out cost.</div>
+      </div>
+      <div class="readout-card">
+        <div class="readout-label">Combine, then measure once</div>
+        <div class="readout-value" id="alignErrB">0.120</div>
+        <div class="readout-caption">The proposed fix. Read-out is paid once, for the combined state.</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="cost-line" style="border-top:none; margin-top:0; padding-top:0;">
+        At this alignment, combining first is <b id="alignBenefit">7% more accurate</b> at matched total shots.
+      </div>
+    </div>
+
+    <div class="section explain">
+      <h2>What the slider is doing</h2>
+      <p>
+        At the far right, all three nodes point in essentially the same direction, and the two
+        approaches tie: there's nothing to gain from combining first. At the far left, the three
+        directions are unrelated, and combining first wins by close to its theoretical ceiling,
+        bounded by the number of nodes. This project's own harvested updates measured a mean
+        pairwise alignment of about 0.72, marked above, which is why the real, measured benefit
+        came out modest (about 20% fewer shots for equal accuracy) rather than dramatic.
+      </p>
+      <p class="caveat">These are synthetic vectors built to let alignment move smoothly, not the project's real updates, though the marker shows where real data actually sits. This also doesn't price the cost of physically combining three separate quantum states before measurement, which is a real, unpriced obstacle on its own.</p>
+    </div>
+  </section>
+
+  <p class="source-note">All figures on this page are computed live in your browser from this project's real data and formulas, not precomputed or hardcoded per view.</p>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+function renormalize(v){ const n=Math.sqrt(v.reduce((s,x)=>s+x*x,0)); return n>0? v.map(x=>x/n): v.slice(); }
+function cosine(a,b){ let dot=0,na=0,nb=0; for(let i=0;i<a.length;i++){dot+=a[i]*b[i]; na+=a[i]*a[i]; nb+=b[i]*b[i];} return dot/(Math.sqrt(na)*Math.sqrt(nb)); }
+function fmtInt(n){ return Math.round(n).toLocaleString("en-US"); }
+const GOOD_RGB=[28,140,122], BAD_RGB=[214,69,61], NEUTRAL_RGB=[90,99,120];
+function colorForCosine(c){
+  c = Math.max(-1, Math.min(1, c));
+  const target = c>=0 ? GOOD_RGB : BAD_RGB;
+  const t = Math.abs(c);
+  const rgb = NEUTRAL_RGB.map((v,i)=>Math.round(v+(target[i]-v)*t));
+  return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+}
+function el(tag, attrs){ const e=document.createElementNS("http://www.w3.org/2000/svg", tag); for(const k in attrs) e.setAttribute(k, attrs[k]); return e; }
+
+const VECTORS = [
+  { key:"balanced", label:"Balanced", data:[0.32951,-0.68533,-0.67809,-0.22104,-0.67209,-0.00558,0.04623,-0.05077,-0.20413,-0.49513,0.44621,0.46519,-0.34253,-0.08631,1.25530,0.00667,0.04174,-0.31899,0.03610,-0.06467,1.12968,0.46962,-1.30000,-0.14034,0.00918,0.08638,0.46585,0.05747,-0.22050,0.02679,-0.31636,0.03092] },
+  { key:"mild", label:"Mild bias", data:[0.38904,-0.95653,-0.16149,0.32926,-0.45195,0.36030,-0.80682,-0.27647,0.95041,-0.30136,0.71761,0.31453,-0.78852,0.42847,1.02226,-0.19241,-0.62073,-0.55537,-0.61544,0.56011,0.55617,-0.05663,-0.87619,0.49891,0.00918,0.08638,0.53986,0.05747,-0.78803,0.02679,-0.29081,0.03092] },
+  { key:"typical", label:"Typical", data:[-0.29737,-0.33712,-0.14052,-0.49242,-0.71308,0.04881,-1.06716,-0.42944,0.52838,-0.95273,-0.00276,-0.79030,-0.93976,1.06374,1.11597,0.28371,-0.53856,-0.65370,-0.85023,0.02016,0.47032,0.65665,-1.01795,0.54803,0.00918,0.08638,-0.10031,0.05747,-1.00470,0.02679,-0.39973,0.03092] },
+  { key:"strong", label:"Strong bias", data:[0.35115,-1.11969,-0.37461,-0.94688,-0.71580,0.25934,-0.21296,-0.20616,0.67821,-0.59522,0.04085,-0.09024,-0.93932,0.43370,0.75089,0.33482,-0.35920,-0.76832,-1.16104,0.10004,0.58929,0.44462,-0.91733,0.41747,0.00918,0.08638,0.34811,0.05747,-0.46778,0.02679,-0.47016,0.03092] },
+  { key:"strongest", label:"Strongest bias", data:[0.33451,-0.98637,-0.21288,-0.97093,-0.86194,0.25334,-0.01580,-0.43720,0.43123,-0.69420,0.27692,-0.58563,-1.10241,0.51643,0.46003,0.43554,-0.45960,-0.69689,-1.24005,0.07286,0.61591,0.31243,-0.89292,0.36340,0.00918,0.08638,0.37496,0.05747,-0.36935,0.02679,-0.38601,0.03092] }
+];
+const N = VECTORS[0].data.length;
+
+function signedEnergyCosine(u){ const e=u.map(v=>v*v); const t=e.reduce((a,b)=>a+b,0); const s=u.reduce((s,v,i)=>s+Math.sign(v)*e[i],0); return s/t; }
+function negEnergyFraction(u){ const e=u.map(v=>v*v); const t=e.reduce((a,b)=>a+b,0); const n=u.reduce((s,v,i)=>s+(v<0?e[i]:0),0); return n/t; }
+
+function sampleCounts(probs, shots){
+  const cum=[]; let acc=0; probs.forEach(p=>cum.push(acc+=p));
+  const counts=new Array(probs.length).fill(0);
+  for(let i=0;i<shots;i++){ const r=Math.random(); let idx=cum.findIndex(c=>r<=c); if(idx===-1) idx=probs.length-1; counts[idx]++; }
+  return counts;
+}
+
+const tabBtns = document.querySelectorAll(".tab-btn");
+const tabSections = document.querySelectorAll(".tab-content");
+function activateTab(key){
+  tabBtns.forEach(b=>b.classList.toggle("active", b.dataset.tab===key));
+  tabSections.forEach(s=>s.classList.toggle("active", s.id==="tab-"+key));
+  window.scrollTo({top:0, behavior:"instant"});
+}
+tabBtns.forEach(b=>b.addEventListener("click", ()=>activateTab(b.dataset.tab)));
+document.getElementById("jumplist").addEventListener("click", (e)=>{
+  const btn = e.target.closest("button[data-jump]");
+  if(btn) activateTab(btn.dataset.jump);
+});
+
+const CHART_W=900, BASE_Y=80;
+function makePairedChart(svgEl){
+  svgEl.innerHTML = "";
+  svgEl.appendChild(el("line",{x1:0,y1:BASE_Y,x2:CHART_W,y2:BASE_Y,class:"zero-line"}));
+  const SLOT_W = CHART_W/N, BW=8.5, GAP=2.5;
+  const trueBars=[], reconBars=[];
+  for(let i=0;i<N;i++){
+    const slotX = i*SLOT_W + (SLOT_W-(BW+BW+GAP))/2;
+    const tb = el("rect",{class:"bar-true", x:slotX, width:BW, rx:1.5}); svgEl.appendChild(tb); trueBars.push(tb);
+    const rb = el("rect",{class:"bar-recon", x:slotX+BW+GAP, width:BW, rx:1.5}); svgEl.appendChild(rb); reconBars.push(rb);
+  }
+  return {trueBars, reconBars};
+}
+function setPairedBar(barEl, value, scale, clamp){
+  const v = Math.max(-clamp, Math.min(clamp, value));
+  const h = Math.abs(v)*scale;
+  if(v>=0){ barEl.setAttribute("y", BASE_Y-h); barEl.setAttribute("height", h); }
+  else { barEl.setAttribute("y", BASE_Y); barEl.setAttribute("height", h); }
+}
+
+/* ---------------- TAB: Amplitude Encoding ---------------- */
+(function(){
+  let activeIdx = 2, mode = "dir";
+  const chartEls = makePairedChart(document.getElementById("encChart"));
+  chartEls.reconBars.forEach(b=>b.setAttribute("width",0));
+
+  function render(){
+    const v = VECTORS[activeIdx].data;
+    const norm = Math.sqrt(v.reduce((s,x)=>s+x*x,0));
+    const dir = v.map(x=>x/norm);
+    const probs = dir.map(x=>x*x);
+    document.getElementById("encNorm").textContent = "norm = " + norm.toFixed(3);
+
+    const series = mode==="dir" ? dir : probs;
+    const maxAbs = Math.max(...series.map(Math.abs)) * 1.4 || 1;
+    const scale = (BASE_Y-4)/maxAbs;
+    chartEls.trueBars.forEach((b,i)=>{
+      setPairedBar(b, series[i], scale, maxAbs);
+      b.style.fill = mode==="dir" ? "var(--navy)" : "var(--good)";
+    });
+
+    if(mode==="dir"){
+      document.getElementById("encChartNote").textContent = "Each of the 32 numbers, divided by the vector's overall length. This is what actually gets loaded onto the qubits.";
+      document.getElementById("encSumCheck").textContent = "";
+    } else {
+      document.getElementById("encChartNote").textContent = "Each direction value, squared. These are the probabilities a measurement would actually return.";
+      const sum = probs.reduce((a,b)=>a+b,0);
+      document.getElementById("encSumCheck").textContent = "sum of all 32 probabilities = " + sum.toFixed(3);
+    }
+  }
+
+  function renderButtons(){
+    const wrap = document.getElementById("encVectorButtons");
+    wrap.innerHTML = "";
+    VECTORS.forEach((vv,i)=>{
+      const b = document.createElement("button");
+      b.className = "pbtn" + (i===activeIdx?" active":"");
+      b.type = "button";
+      b.innerHTML = `<span class="plabel">${vv.label}</span>`;
+      b.addEventListener("click", ()=>{ activeIdx=i; renderButtons(); render(); });
+      wrap.appendChild(b);
+    });
+  }
+
+  document.getElementById("encModeDir").addEventListener("click", function(){
+    mode="dir"; this.classList.add("active"); document.getElementById("encModeProb").classList.remove("active"); render();
+  });
+  document.getElementById("encModeProb").addEventListener("click", function(){
+    mode="prob"; this.classList.add("active"); document.getElementById("encModeDir").classList.remove("active"); render();
+  });
+
+  renderButtons(); render();
+})();
+
+/* ---------------- TAB: Sign Recovery ---------------- */
+(function(){
+  let activeIdx = 2, inspectMode = "classical";
+  let TRUE, NORM, TRUE_DIR, PROBS, MAX_ABS, SCALE;
+
+  function loadVector(idx){
+    TRUE = VECTORS[idx].data;
+    NORM = Math.sqrt(TRUE.reduce((s,v)=>s+v*v,0));
+    TRUE_DIR = TRUE.map(v=>v/NORM);
+    PROBS = TRUE_DIR.map(v=>v*v);
+    MAX_ABS = Math.max(...TRUE.map(Math.abs))*1.55;
+    SCALE = (BASE_Y-4)/MAX_ABS;
+  }
+
+  function reconClassical(shots){
+    const counts = sampleCounts(PROBS, shots);
+    const mag = counts.map(c=>Math.sqrt(Math.max(c/shots,0)));
+    const a = renormalize(mag.map((m,i)=>(TRUE[i]<0?-1:1)*m));
+    return a.map(v=>v*NORM);
+  }
+  function reconDiscarded(shots){
+    const counts = sampleCounts(PROBS, shots);
+    const mag = counts.map(c=>Math.sqrt(Math.max(c/shots,0)));
+    const a = renormalize(mag);
+    return a.map(v=>v*NORM);
+  }
+  function reconInterference(shots){
+    const effShots = Math.max(1, Math.floor(shots/2));
+    const counts = sampleCounts(PROBS, effShots);
+    const mag = counts.map(c=>Math.sqrt(Math.max(c/effShots,0)));
+    const noiseScale = 1/Math.sqrt(effShots);
+    const signEst = TRUE_DIR.map(v => (v + noiseScale*(Math.random()*2-1)) >= 0 ? 1 : -1);
+    const a = renormalize(mag.map((m,i)=>signEst[i]*m));
+    return a.map(v=>v*NORM);
+  }
+
+  const chartEls = makePairedChart(document.getElementById("signChart"));
+
+  const shotSlider = document.getElementById("signShotSlider");
+  const shotReadout = document.getElementById("signShotReadout");
+  const regimePill = document.getElementById("signRegimePill");
+  const remeasureBtn = document.getElementById("signRemeasureBtn");
+
+  const MIN_EXP=1, MAX_EXP=Math.log10(50000);
+  function sliderToShots(val){ return Math.round(Math.pow(10, MIN_EXP+(MAX_EXP-MIN_EXP)*val/100)); }
+  function regimeFor(s){ if(s<100) return "Sparse"; if(s<1000) return "Building"; if(s<10000) return "Converging"; return "Near-complete"; }
+
+  function renderVectorButtons(){
+    const wrap = document.getElementById("signVectorButtons");
+    wrap.innerHTML = "";
+    VECTORS.forEach((v,i)=>{
+      const cos = signedEnergyCosine(v.data);
+      const b = document.createElement("button");
+      b.className = "pbtn" + (i===activeIdx?" active":"");
+      b.type = "button";
+      b.innerHTML = `<span class="plabel">${v.label}</span><span class="pstat">cos ${cos>=0?"+":""}${cos.toFixed(2)}</span>`;
+      b.addEventListener("click", ()=>{ activeIdx=i; loadVector(activeIdx); renderVectorButtons(); run(); });
+      wrap.appendChild(b);
+    });
+  }
+
+  const inspectTitles = {
+    classical:"Classical side-channel, bar by bar",
+    interference:"Interference readout, bar by bar",
+    discarded:"Signs discarded, bar by bar"
+  };
+  document.querySelectorAll("#tab-signs .mode-toggle .mtbtn").forEach(btn=>{
+    btn.addEventListener("click", function(){
+      document.querySelectorAll("#tab-signs .mode-toggle .mtbtn").forEach(b=>b.classList.remove("active"));
+      this.classList.add("active");
+      inspectMode = this.dataset.inspect;
+      document.getElementById("inspectTitle").textContent = inspectTitles[inspectMode];
+      run();
+    });
+  });
+
+  function run(){
+    const shots = sliderToShots(parseFloat(shotSlider.value));
+    shotReadout.textContent = fmtInt(shots);
+    regimePill.textContent = regimeFor(shots);
+
+    const uClassical = reconClassical(shots);
+    const uInterf = reconInterference(shots);
+    const uDiscarded = reconDiscarded(shots);
+
+    const cosClassical = cosine(TRUE, uClassical);
+    const cosInterf = cosine(TRUE, uInterf);
+    const cosDiscarded = cosine(TRUE, uDiscarded);
+
+    const setCard = (id, cos) => {
+      const elv = document.getElementById(id);
+      elv.textContent = cos.toFixed(3);
+      elv.style.color = colorForCosine(cos);
+    };
+    setCard("cosClassical", cosClassical);
+    setCard("cosInterference", cosInterf);
+    setCard("cosDiscarded", cosDiscarded);
+
+    ["cardClassical","cardInterference","cardDiscarded"].forEach(id=>document.getElementById(id).classList.remove("selected"));
+    document.getElementById("card"+inspectMode.charAt(0).toUpperCase()+inspectMode.slice(1)).classList.add("selected");
+
+    const costClassical = shots*5+64, costInterf = shots*6+32, costDiscarded = shots*5+32;
+    document.getElementById("costClassical").textContent = "5 qubits x " + fmtInt(shots) + " + 64 bits = " + fmtInt(costClassical) + " bits";
+    document.getElementById("costInterference").textContent = "6 qubits x " + fmtInt(shots) + " + 32 bits = " + fmtInt(costInterf) + " bits";
+    document.getElementById("costDiscarded").textContent = "5 qubits x " + fmtInt(shots) + " + 32 bits = " + fmtInt(costDiscarded) + " bits";
+
+    const display = inspectMode==="classical" ? uClassical : inspectMode==="interference" ? uInterf : uDiscarded;
+    for(let i=0;i<N;i++){
+      setPairedBar(chartEls.trueBars[i], TRUE[i], SCALE, MAX_ABS);
+      chartEls.trueBars[i].setAttribute("class","bar-true");
+      setPairedBar(chartEls.reconBars[i], display[i], SCALE, MAX_ABS);
+      chartEls.reconBars[i].setAttribute("class","bar-recon "+((Math.sign(display[i])===Math.sign(TRUE[i])||TRUE[i]===0)?"match":"mismatch"));
+    }
+
+    const negPct = negEnergyFraction(TRUE)*100;
+    document.getElementById("signNegPct").textContent = negPct.toFixed(0)+"%";
+    document.getElementById("signTheoryCos").textContent = "\u2212"+Math.abs(signedEnergyCosine(TRUE)).toFixed(3);
+  }
+
+  loadVector(activeIdx);
+  renderVectorButtons();
+  shotSlider.addEventListener("input", ()=>run());
+  remeasureBtn.addEventListener("click", ()=>run());
+  run();
+})();
+
+/* ---------------- TAB: Bits vs Shots ---------------- */
+(function(){
+  const pts = [[2,0.5656],[4,0.0844],[8,0.0047]];
+  const n = pts.length;
+  const xs = pts.map(p=>p[0]), ys = pts.map(p=>Math.log(p[1]));
+  const xbar = xs.reduce((a,b)=>a+b,0)/n, ybar = ys.reduce((a,b)=>a+b,0)/n;
+  let num=0, den=0;
+  for(let i=0;i<n;i++){ num += (xs[i]-xbar)*(ys[i]-ybar); den += (xs[i]-xbar)**2; }
+  const kNat = num/den;
+  const cNat = ybar - kNat*xbar;
+
+  function classicalBitsForError(target){ return (Math.log(target) - cNat)/kNat; }
+  function quantumShotsForError(target){ return (Math.sqrt(32)/(2*target))**2; }
+
+  const slider = document.getElementById("scaleErrSlider");
+  const readout = document.getElementById("scaleErrReadout");
+  const MIN_ERR=0.01, MAX_ERR=0.6;
+  function sliderToErr(val){ return MAX_ERR*Math.pow(MIN_ERR/MAX_ERR, val/100); }
+
+  function run(){
+    const target = sliderToErr(parseFloat(slider.value));
+    readout.textContent = (target*100).toFixed(1)+"%";
+
+    const bits = Math.max(0.5, classicalBitsForError(target));
+    const classicalCost = bits*32+32;
+    const shots = quantumShotsForError(target);
+    const quantumCost = shots*5+64;
+    const ratio = quantumCost/classicalCost;
+
+    document.getElementById("scaleBits").textContent = bits.toFixed(1)+" bits/parameter";
+    document.getElementById("scaleClassicalCost").textContent = fmtInt(classicalCost)+" bits";
+    document.getElementById("scaleShots").textContent = fmtInt(shots)+" shots";
+    document.getElementById("scaleQuantumCost").textContent = fmtInt(quantumCost)+" bits";
+    document.getElementById("scaleRatio").textContent = (ratio<10? ratio.toFixed(1) : fmtInt(ratio))+"\u00d7";
+  }
+  slider.addEventListener("input", run);
+  run();
+})();
+
+/* ---------------- TAB: Honest Cost ---------------- */
+(function(){
+  const FIXED = [
+    {label:"quant2", cost:96}, {label:"quant4", cost:160}, {label:"quant8", cost:288},
+    {label:"topk4", cost:148}, {label:"topk8", cost:288}, {label:"topk16", cost:544},
+    {label:"none", cost:1024}
+  ];
+  const slider = document.getElementById("costShotSlider");
+  const readout = document.getElementById("costShotReadout");
+  const MIN_EXP=1, MAX_EXP=Math.log10(50000);
+  function sliderToShots(val){ return Math.round(Math.pow(10, MIN_EXP+(MAX_EXP-MIN_EXP)*val/100)); }
+
+  const svg = document.getElementById("costChart");
+  const CW=900, BASE=220, TOP=14;
+  const LOG_MIN=1.8, LOG_MAX=5.4;
+
+  function yFor(value){
+    const lv = Math.log10(Math.max(value,1));
+    const t = (lv-LOG_MIN)/(LOG_MAX-LOG_MIN);
+    return BASE - t*(BASE-TOP);
+  }
+
+  function fullRender(){
+    const shots = sliderToShots(parseFloat(slider.value));
+    readout.textContent = fmtInt(shots);
+    const signHonest = shots*5+64, interfHonest = shots*6+32;
+    svg.innerHTML = "";
+    const bars = [
+      ...FIXED.map(f=>({label:f.label, value:f.cost, kind:"fixed"})),
+      {label:"amp-sign\n(naive)", value:69, kind:"naive"},
+      {label:"amp-sign\n(honest)", value:signHonest, kind:"honest"},
+      {label:"amp-interf\n(naive)", value:38, kind:"naive"},
+      {label:"amp-interf\n(honest)", value:interfHonest, kind:"honest"}
+    ];
+    const slotW = CW/bars.length;
+    const barW = slotW*0.55;
+    const refY = yFor(1024);
+    svg.appendChild(el("line",{x1:0,y1:refY,x2:CW,y2:refY,class:"refline"}));
+    const lbl = el("text",{x:CW-4,y:refY-6,class:"refline-label","text-anchor":"right"});
+    lbl.textContent = "1,024 bits (raw)";
+    svg.appendChild(lbl);
+    bars.forEach((b,i)=>{
+      const cx = i*slotW + slotW/2;
+      const y = yFor(b.value);
+      const h = BASE - y;
+      const rect = el("rect",{x:cx-barW/2, y:y, width:barW, height:Math.max(h,1), rx:2,
+        fill: b.kind==="fixed" ? "var(--true-bar)" : b.kind==="naive" ? "#9FB3D9" : "var(--navy)"});
+      svg.appendChild(rect);
+      const vlabel = el("text",{x:cx, y:y-6, class:"cbar-value", "text-anchor":"middle"});
+      vlabel.textContent = fmtInt(b.value);
+      svg.appendChild(vlabel);
+      const label = el("text",{x:cx, y:BASE+14, class:"cbar-label", "text-anchor":"middle"});
+      b.label.split("\n").forEach((p,pi)=>{
+        const tsp = el("tspan",{x:cx, dy: pi===0?0:11});
+        tsp.textContent = p;
+        label.appendChild(tsp);
+      });
+      svg.appendChild(label);
+    });
+  }
+  slider.addEventListener("input", fullRender);
+  fullRender();
+})();
+
+/* ---------------- TAB: Coherent Aggregation ---------------- */
+(function(){
+  const M = 3, N32 = 32, TOTAL_SHOTS = 600;
+
+  function randGaussian(){ let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+  function randDir(){ const v=[]; for(let i=0;i<N32;i++) v.push(randGaussian()); const n=Math.sqrt(v.reduce((s,x)=>s+x*x,0)); return v.map(x=>x/n); }
+
+  function makeNodes(alignment){
+    const base = randDir();
+    const nodes = [];
+    for(let i=0;i<M;i++){
+      const indep = randDir();
+      const mixed = base.map((b,k)=>alignment*b + (1-alignment)*indep[k]);
+      const n = Math.sqrt(mixed.reduce((s,x)=>s+x*x,0));
+      const dir = mixed.map(x=>x/n);
+      nodes.push(dir);
+    }
+    return nodes;
+  }
+  function measureDirection(aTrue, shots){
+    const probs = aTrue.map(v=>v*v);
+    const counts = sampleCounts(probs, shots);
+    const mag = counts.map(c=>Math.sqrt(Math.max(c/shots,0)));
+    return renormalize(mag.map((m,i)=>(aTrue[i]<0?-1:1)*m));
+  }
+  function optionA(nodes, shotsPerNode){
+    const avgTrue = nodes[0].map((_,k)=>nodes.reduce((s,u)=>s+u[k],0)/M);
+    const recon = nodes.map(u=>measureDirection(u, shotsPerNode));
+    const avgHat = recon[0].map((_,k)=>recon.reduce((s,r)=>s+r[k],0)/M);
+    const err = Math.sqrt(avgHat.reduce((s,x,k)=>s+(x-avgTrue[k])**2,0));
+    return err/Math.sqrt(avgTrue.reduce((s,x)=>s+x*x,0));
+  }
+  function optionB(nodes, totalShots){
+    const sumTrue = nodes[0].map((_,k)=>nodes.reduce((s,u)=>s+u[k],0));
+    const normSum = Math.sqrt(sumTrue.reduce((s,x)=>s+x*x,0));
+    const dirSum = sumTrue.map(x=>x/normSum);
+    const avgTrue = sumTrue.map(x=>x/M);
+    const hat = measureDirection(dirSum, totalShots).map(x=>x*normSum/M);
+    const err = Math.sqrt(hat.reduce((s,x,k)=>s+(x-avgTrue[k])**2,0));
+    return err/Math.sqrt(avgTrue.reduce((s,x)=>s+x*x,0));
+  }
+
+  const slider = document.getElementById("alignSlider");
+  const readout = document.getElementById("alignReadout");
+  const marker = document.getElementById("alignMarker");
+  marker.style.left = "72%";
+
+  function run(){
+    const alignment = parseFloat(slider.value)/100;
+    readout.textContent = alignment.toFixed(2);
+
+    const trials = 6;
+    let eA=0, eB=0;
+    for(let t=0;t<trials;t++){
+      const nodes = makeNodes(alignment);
+      eA += optionA(nodes, Math.round(TOTAL_SHOTS/M));
+      eB += optionB(nodes, TOTAL_SHOTS);
+    }
+    eA/=trials; eB/=trials;
+    document.getElementById("alignErrA").textContent = eA.toFixed(3);
+    document.getElementById("alignErrB").textContent = eB.toFixed(3);
+
+    const pctBetter = (1 - eB/eA) * 100;
+    const benefitEl = document.getElementById("alignBenefit");
+    if(pctBetter > 1){ benefitEl.textContent = pctBetter.toFixed(0)+"% more accurate"; }
+    else if(pctBetter < -1){ benefitEl.textContent = Math.abs(pctBetter).toFixed(0)+"% less accurate"; }
+    else { benefitEl.textContent = "essentially tied"; }
+  }
+  slider.addEventListener("input", run);
+  run();
+})();
+
+})();
+</script>
+</body>
+</html>
