@@ -23,7 +23,9 @@
 <meta name="twitter:title" content="Noah Wijnheijmer | Portfolio & Personal Website">
 <meta name="twitter:description" content="Personal website and portfolio of Noah Wijnheijmer. Discover my projects, experience, and links to my LinkedIn profile.">
 <meta name="twitter:image" content="https://wijnheijmer.com/assets/full_body.jpg">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230A0B0D'/><text y='.9em' x='50%25' text-anchor='middle' font-size='58' font-family='Georgia,serif' fill='%238FD9CE'>N</text></svg>">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -90,6 +92,8 @@ button{font:inherit; color:inherit}
 .nav-in{max-width:var(--wrap); margin:0 auto; padding:0 28px; height:64px; display:flex; align-items:center; gap:26px}
 .mark{font-family:var(--display); font-size:19px; letter-spacing:.01em; text-decoration:none; white-space:nowrap; margin-right:auto}
 .mark span{color:var(--accent)}
+.mark svg{width:.933em; height:.875em; margin-right:.42em; vertical-align:-.182em}
+.mark .ket-line{fill:none; stroke:var(--accent); stroke-width:46; stroke-linecap:round; stroke-linejoin:round}
 .nav-links{display:flex; gap:2px}
 .nav-links a{
   position:relative; text-decoration:none; font-size:13px; font-weight:400; color:var(--muted);
@@ -387,7 +391,7 @@ footer{border-top:1px solid var(--line-soft); padding:34px 0 46px}
 
 <nav class="nav">
   <div class="nav-in">
-    <a href="#top" class="mark">Noah Wijnheijmer<span>.</span></a>
+    <a href="#top" class="mark"><svg viewBox="-55.4 -692.4 932.87 874.8" aria-hidden="true"><path class="ket-line" d="M0 -637V127"/><path transform="translate(64.23 0)" fill="currentColor" d="M53 -13 148 -412Q153 -434 149.5 -446.5Q146 -459 131 -459Q113 -459 91.5 -432.5Q70 -406 43 -332Q39 -319 29 -319Q14 -319 21 -337Q43 -406 67.5 -445.0Q92 -484 117.0 -500.0Q142 -516 163 -516Q196 -516 210.0 -491.5Q224 -467 211 -411L186 -303Q185 -296 189.0 -295.0Q193 -294 196 -300Q235 -381 271.0 -428.5Q307 -476 339.0 -496.0Q371 -516 397 -516Q434 -516 451.0 -486.0Q468 -456 451 -394L375 -104Q368 -76 374.0 -62.0Q380 -48 396 -48Q416 -48 435.5 -74.5Q455 -101 476 -175Q479 -186 489 -186Q497 -186 498.5 -180.0Q500 -174 498 -166Q479 -98 457.0 -59.5Q435 -21 412.5 -6.0Q390 9 367 9Q331 9 313.0 -21.0Q295 -51 311 -114L388 -404Q399 -443 391.5 -458.0Q384 -473 370 -473Q348 -473 320.0 -445.5Q292 -418 263.0 -370.5Q234 -323 206.0 -263.0Q178 -203 155.5 -138.0Q133 -73 119 -11Q116 0 105 0H64Q50 0 53 -13Z"/><path class="ket-line" d="M626.37 -637L822.07 -255L626.37 127"/></svg>Noah Wijnheijmer<span>.</span></a>
     <div class="nav-links" id="navlinks">
       <a href="#work">Work</a>
       <a href="#papers">Papers</a>
